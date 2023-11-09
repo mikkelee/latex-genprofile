@@ -49,11 +49,10 @@
 			}
 
 			% set id unless already defined
-			\tl_clear_new:N \l__gp_final_id_tl
-			\gp_generate_unique_id:Ne \l__gp_final_id_tl {\l__gp_tmpid_tl}
-			\seq_gput_right:Ne \g__gp_used_profile_ids_seq \l__gp_final_id_tl
-			\keys_set:nn { genealogy-profiles / profile }
-					{ id = \l__gp_final_id_tl }
+			\tl_clear_new:N \l__gp_generated_id_tl
+			\gp_generate_unique_id:Ne \l__gp_generated_id_tl {\l__gp_tmpid_tl}
+			\seq_gput_right:Ne \g__gp_used_profile_ids_seq \l__gp_generated_id_tl
+			\tl_set_eq:NN \l__gp_id_tl \l__gp_generated_id_tl
 		} ,
 
 %	vital data / genealogytree
@@ -116,18 +115,20 @@
 \NewDocumentEnvironment { genProfile } { O{} } {
 	\group_begin:
 		\keys_set:nn { genealogy-profiles / profile } { #1 }
-%		\label{\l__gp_id_tl}
+		\label{ genProfile:\tl_use:N \l__gp_id_tl }
 		\tl_clear_new:N \l__gp_formatted_name_tl
 		\gp_format_name:N \l__gp_formatted_name_tl
-		Profile: ~ \tl_use:N \l__gp_formatted_name_tl \par
+		\tl_use:N \l__gp_formatted_name_tl \hfill [\tl_use:N \l__gp_id_tl] \par
 	\group_end:
 }{\par}
 
 \NewDocumentCommand { \genRef } { o m } {
 	\IfValueTF{#1}{
 		#2
-		% look up ref
+		\textsuperscript{#1,~p.~\pageref{genProfile:#1}}
+		% log from to
 	}{
+		% log unlinked
 		{\color{red}#2}
 	}
 }
