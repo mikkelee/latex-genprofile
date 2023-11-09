@@ -12,6 +12,10 @@
 
 \keys_define:nn { genealogy-profiles }
 {
+	% formatting
+	before~profile				.tl_set:N		= \l__gp_before_profile_tl ,
+	after~profile				.tl_set:N		= \l__gp_after_profile_tl ,
+
 	name~part~order				.code:n			= {
 			\seq_gset_from_clist:Nn \g__gp_name_part_order_seq {#1}
 		} ,
@@ -106,13 +110,16 @@
 % TODO starred with just name parts
 \NewDocumentEnvironment { genProfile } { O{} } {
 	\group_begin:
+		\tl_use:N \l__gp_before_profile_tl
 		\keys_set:nn { genealogy-profiles / profile } { #1 }
 		\label{ genProfile:\tl_use:N \l__gp_id_tl }
 		\tl_clear_new:N \l__gp_formatted_name_tl
 		\gp_format_name:N \l__gp_formatted_name_tl
 		\tl_use:N \l__gp_formatted_name_tl \hfill [\tl_use:N \l__gp_id_tl] \par
+}{
+		\tl_use:N \l__gp_after_profile_tl
 	\group_end:
-}{\par}
+}
 
 \NewDocumentCommand { \genRef } { o m } {
 	\IfValueTF{#1}{

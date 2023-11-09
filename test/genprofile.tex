@@ -1,6 +1,13 @@
-\documentclass{article}
+\documentclass[
+	twocolumn
+]{article}
 
 \usepackage{genealogy-profiles}
+\usepackage[asterism]{sectionbreak}
+
+\gpKeys{
+	after profile = {\sectionbreak},
+}
 
 \begin{document}
 
@@ -15,8 +22,6 @@
 
 \end{genProfile}
 
-\clearpage
-
 \begin{genProfile}[
 	name parts = {Hans,Jensen},
 ]
@@ -24,8 +29,6 @@
 	\genRef[JHx1]{Jens Hansen}
 
 \end{genProfile}
-
-\clearpage
 
 \begin{genProfile}[
 	id = {ABC} ,
@@ -36,16 +39,12 @@
 
 \end{genProfile}
 
-\clearpage
-
 \begin{genProfile}[
 	name parts = {Jens,Hansen,Smed},
 ]
 	Urelateret person
 
 \end{genProfile}
-
-\clearpage
 
 \begin{genProfile}[
 	name parts = {Henrik,Jensen},
