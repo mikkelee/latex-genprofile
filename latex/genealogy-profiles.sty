@@ -18,6 +18,11 @@
 %	name part formatting
 }
 
+% set some defaults
+\keys_set:nn { genealogy-profiles } {
+	name~part~order = { given_name, patronymic, byname } ,
+}
+
 \keys_define:nn { genealogy-profiles / profile }
 {
 	id							.tl_set:N		= \l__gp_id_tl ,
@@ -58,9 +63,7 @@
 %	vital data / genealogytree
 }
 
-
-
-\NewDocumentCommand { \nduKeys } { m } {
+\NewDocumentCommand { \gpKeys } { m } {
 	\keys_set:nn { genealogy-profiles } { #1 }
 }
 
@@ -105,11 +108,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % User commands
 % 
-
-% set some defaults
-\keys_set:nn { genealogy-profiles } {
-	name~part~order = { given~name, patronymic, byname } ,
-}
 
 % TODO starred with just name parts
 \NewDocumentEnvironment { genProfile } { O{} } {
