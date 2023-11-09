@@ -14,6 +14,7 @@
 {
 	% formatting
 	before~profile				.tl_set:N		= \l__gp_before_profile_tl ,
+	split~profile				.tl_set:N		= \l__gp_split_profile_tl ,
 	after~profile				.tl_set:N		= \l__gp_after_profile_tl ,
 
 	name~part~order				.code:n			= {
@@ -116,6 +117,7 @@
 		\tl_clear_new:N \l__gp_formatted_name_tl
 		\gp_format_name:N \l__gp_formatted_name_tl
 		\tl_use:N \l__gp_formatted_name_tl \hfill [\tl_use:N \l__gp_id_tl] \par
+		\tl_use:N \l__gp_split_profile_tl
 }{
 		\tl_use:N \l__gp_after_profile_tl
 	\group_end:
