@@ -50,11 +50,8 @@
 
 			% set id unless already defined
 			\tl_clear_new:N \l__gp_final_id_tl
-\tl_show:N \l__gp_tmpid_tl
 			\gp_generate_unique_id:Ne \l__gp_final_id_tl {\l__gp_tmpid_tl}
-\tl_show:N \l__gp_final_id_tl
 			\seq_gput_right:Ne \g__gp_used_profile_ids_seq \l__gp_final_id_tl
-\seq_show:N \g__gp_used_profile_ids_seq
 			\keys_set:nn { genealogy-profiles / profile }
 					{ id = \l__gp_final_id_tl }
 		} ,
@@ -79,20 +76,13 @@
 {
 	\int_zero_new:N \l__gp_id_index_int
 
-%\tl_show:e {95~#2}
-%\int_show:N \l__gp_id_index_int
-%\tl_show:N \l__gp_tmpid_tl
-%\tl_show:e {99~ #2 \int_use:N \l__gp_id_index_int }
 	\bool_set_false:N \l__gp_id_exists_bool
 	\bool_do_until:nn { ! \l__gp_id_exists_bool } {
-%\int_show:N \l__gp_id_index_int
 		\int_incr:N \l__gp_id_index_int
-%\int_show:N \l__gp_id_index_int
 		\seq_if_in:NeTF \g__gp_used_profile_ids_seq { #2 \int_use:N \l__gp_id_index_int }
 			{ \bool_set_true:N \l__gp_id_exists_bool }
 			{ \bool_set_false:N \l__gp_id_exists_bool }
 	}
-%\int_show:N \l__gp_id_index_int
 
 	\tl_set:Ne #1 { #2 \int_use:N \l__gp_id_index_int }
 }
