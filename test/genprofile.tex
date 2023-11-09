@@ -1,0 +1,56 @@
+\documentclass{article}
+
+\usepackage{genealogy-profiles}
+
+\begin{document}
+
+\begin{genProfile}[
+	name parts = {Jens,Hansen},
+]
+	Børn:
+	\begin{enumerate}
+	\item \genRef{Hans Jensen}
+	\item \genRef{Jens Jensen}
+	\end{enumerate}
+
+\end{genProfile}
+
+\clearpage
+
+\begin{genProfile}[
+	name parts = {Hans,Jensen},
+]
+	Far:
+	\genRef[JH1]{Jens Hansen}
+
+\end{genProfile}
+
+\clearpage
+
+\begin{genProfile}[
+	name parts = {Jens,Jensen},
+]
+	Far:
+	\genRef{Jens Hansen}
+
+\end{genProfile}
+
+\clearpage
+
+\begin{genProfile}[
+	name parts = {Jens,Hansen,Smed},
+]
+	Urelateret person
+
+\end{genProfile}
+
+\clearpage
+
+\begin{genProfile}[
+	name parts = {Henrik,Jensen},
+]
+	Urelateret person
+
+\end{genProfile}
+
+\end{document}
