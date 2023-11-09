@@ -31,33 +31,27 @@
 	patronymic					.tl_set:N		= \l__gp_patronymic_tl ,
 	surname						.tl_set:N		= \l__gp_surname_tl ,
 	byname						.tl_set:N		= \l__gp_byname_tl ,
-	name~part~order				.code:n			= {
-			\seq_set_from_clist:Nn \l__gp_name_part_order_seq {#1}
-		} ,
 	name~parts					.code:n			= {
 			\seq_set_from_clist:Nn \l_tmpa_seq {#1}
 			\tl_clear_new:N \l__gp_tmpid_tl
 			\seq_map_indexed_inline:Nn \g__gp_name_part_order_seq {
-				\tl_clear_new:N \l__gp_name_part_tl
-				\tl_set:Ne \l__gp_name_part_tl { \seq_item:Nn \l_tmpa_seq {##1} } 
-
-				% set name parts
-				\keys_set:nn { genealogy-profiles / profile }
-					{ ##2 = { \l__gp_name_part_tl } }
+				\tl_set:ce { l__gp_##2_tl } { \seq_item:Nn \l_tmpa_seq {##1} } 
 
 				% build id
-				\tl_if_empty:NTF \l__gp_name_part_tl {
+				\tl_if_empty:cTF { l__gp_##2_tl } {
 					\tl_put_right:Ne \l__gp_tmpid_tl { x }
 				} {
-					\tl_put_right:Ne \l__gp_tmpid_tl { \tl_item:Nn \l__gp_name_part_tl {1} }
+					\tl_put_right:Ne \l__gp_tmpid_tl { \tl_item:cn { l__gp_##2_tl } {1} }
 				}
 			}
 
 			% set id unless already defined
-			\tl_clear_new:N \l__gp_generated_id_tl
-			\gp_generate_unique_id:Ne \l__gp_generated_id_tl {\l__gp_tmpid_tl}
-			\seq_gput_right:Ne \g__gp_used_profile_ids_seq \l__gp_generated_id_tl
-			\tl_set_eq:NN \l__gp_id_tl \l__gp_generated_id_tl
+			\tl_if_empty:NT \l__gp_id_tl {
+				\tl_clear_new:N \l__gp_generated_id_tl
+				\gp_generate_unique_id:Ne \l__gp_generated_id_tl {\l__gp_tmpid_tl}
+				\seq_gput_right:Ne \g__gp_used_profile_ids_seq \l__gp_generated_id_tl
+				\tl_set_eq:NN \l__gp_id_tl \l__gp_generated_id_tl
+			}
 		} ,
 
 %	vital data / genealogytree
