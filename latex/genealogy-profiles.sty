@@ -114,6 +114,7 @@
 		\tl_use:N \l__gp_before_profile_tl
 		\keys_set:nn { genealogy-profiles / profile } { #1 }
 		\label{ genProfile:\tl_use:N \l__gp_id_tl }
+		\property_record:ee { genProfile:\tl_use:N \l__gp_id_tl } { label, page }
 		\tl_clear_new:N \l__gp_formatted_name_tl
 		\gp_format_name:N \l__gp_formatted_name_tl
 		\tl_use:N \l__gp_formatted_name_tl \hfill [\tl_use:N \l__gp_id_tl] \par
@@ -126,7 +127,7 @@
 \NewDocumentCommand { \genRef } { o m } {
 	\IfValueTF{#1}{
 		#2
-		\textsuperscript{#1,~p.~\pageref{genProfile:#1}}
+		\textsuperscript{#1,~p.~\property_ref:nn {genProfile:#1} {page}}
 		% log from to
 	}{
 		% log unlinked
