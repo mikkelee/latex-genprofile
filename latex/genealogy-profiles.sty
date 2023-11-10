@@ -25,14 +25,14 @@
 
 % set some defaults
 \keys_set:nn { genealogy-profiles } {
-	name~part~order = { given_name, patronymic, byname } ,
+	name~part~order = { givenname, patronymic, surname, byname } ,
 }
 
 \keys_define:nn { genealogy-profiles / profile }
 {
 	id							.tl_set:N		= \l__gpr_id_tl ,
 %	fullname?
-	given~name					.tl_set:N		= \l__gpr_given_name_tl ,
+	givenname					.tl_set:N		= \l__gpr_givenname_tl ,
 	patronymic					.tl_set:N		= \l__gpr_patronymic_tl ,
 	surname						.tl_set:N		= \l__gpr_surname_tl ,
 	byname						.tl_set:N		= \l__gpr_byname_tl ,
@@ -66,6 +66,8 @@
 	\keys_set:nn { genealogy-profiles } { #1 }
 }
 
+% \property_new:nnnn { genealogy-profiles / floruit }
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Formatting
 % 
@@ -97,7 +99,7 @@
 	\seq_clear_new:N \l__gpr_formatted_name_seq
 
 	% TODO
-	\seq_put_right:Nn \l__gpr_formatted_name_seq { \l__gpr_given_name_tl }
+	\seq_put_right:Nn \l__gpr_formatted_name_seq { \l__gpr_givenname_tl }
 	\seq_put_right:Nn \l__gpr_formatted_name_seq { \textit{ \l__gpr_patronymic_tl } }
 	\seq_put_right:Nn \l__gpr_formatted_name_seq { \textsc{ \l__gpr_byname_tl } }
 
