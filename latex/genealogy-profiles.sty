@@ -13,12 +13,12 @@
 \keys_define:nn { genealogy-profiles }
 {
 	% formatting
-	before~profile				.tl_set:N		= \l__gp_before_profile_tl ,
-	split~profile				.tl_set:N		= \l__gp_split_profile_tl ,
-	after~profile				.tl_set:N		= \l__gp_after_profile_tl ,
+	before~profile				.tl_set:N		= \l__gpr_before_profile_tl ,
+	split~profile				.tl_set:N		= \l__gpr_split_profile_tl ,
+	after~profile				.tl_set:N		= \l__gpr_after_profile_tl ,
 
 	name~part~order				.code:n			= {
-			\seq_gset_from_clist:Nn \g__gp_name_part_order_seq {#1}
+			\seq_gset_from_clist:Nn \g__gpr_name_part_order_seq {#1}
 		} ,
 %	name part formatting
 }
@@ -30,39 +30,39 @@
 
 \keys_define:nn { genealogy-profiles / profile }
 {
-	id							.tl_set:N		= \l__gp_id_tl ,
+	id							.tl_set:N		= \l__gpr_id_tl ,
 %	fullname?
-	given~name					.tl_set:N		= \l__gp_given_name_tl ,
-	patronymic					.tl_set:N		= \l__gp_patronymic_tl ,
-	surname						.tl_set:N		= \l__gp_surname_tl ,
-	byname						.tl_set:N		= \l__gp_byname_tl ,
+	given~name					.tl_set:N		= \l__gpr_given_name_tl ,
+	patronymic					.tl_set:N		= \l__gpr_patronymic_tl ,
+	surname						.tl_set:N		= \l__gpr_surname_tl ,
+	byname						.tl_set:N		= \l__gpr_byname_tl ,
 	name~parts					.code:n			= {
 			\seq_set_from_clist:Nn \l_tmpa_seq {#1}
-			\tl_clear_new:N \l__gp_tmpid_tl
-			\seq_map_indexed_inline:Nn \g__gp_name_part_order_seq {
-				\tl_set:ce { l__gp_##2_tl } { \seq_item:Nn \l_tmpa_seq {##1} } 
+			\tl_clear_new:N \l__gpr_tmpid_tl
+			\seq_map_indexed_inline:Nn \g__gpr_name_part_order_seq {
+				\tl_set:ce { l__gpr_##2_tl } { \seq_item:Nn \l_tmpa_seq {##1} } 
 
 				% build id
-				\tl_if_empty:cTF { l__gp_##2_tl } {
-					\tl_put_right:Ne \l__gp_tmpid_tl { x }
+				\tl_if_empty:cTF { l__gpr_##2_tl } {
+					\tl_put_right:Ne \l__gpr_tmpid_tl { x }
 				} {
-					\tl_put_right:Ne \l__gp_tmpid_tl { \tl_item:cn { l__gp_##2_tl } {1} }
+					\tl_put_right:Ne \l__gpr_tmpid_tl { \tl_item:cn { l__gpr_##2_tl } {1} }
 				}
 			}
 
 			% set id unless already defined
-			\tl_if_empty:NT \l__gp_id_tl {
-				\tl_clear_new:N \l__gp_generated_id_tl
-				\gp_generate_unique_id:Ne \l__gp_generated_id_tl {\l__gp_tmpid_tl}
-				\seq_gput_right:Ne \g__gp_used_profile_ids_seq \l__gp_generated_id_tl
-				\tl_set_eq:NN \l__gp_id_tl \l__gp_generated_id_tl
+			\tl_if_empty:NT \l__gpr_id_tl {
+				\tl_clear_new:N \l__gpr_generated_id_tl
+				\gpr_generate_unique_id:Ne \l__gpr_generated_id_tl {\l__gpr_tmpid_tl}
+				\seq_gput_right:Ne \g__gpr_used_profile_ids_seq \l__gpr_generated_id_tl
+				\tl_set_eq:NN \l__gpr_id_tl \l__gpr_generated_id_tl
 			}
 		} ,
 
 %	vital data / genealogytree
 }
 
-\NewDocumentCommand { \gpKeys } { m } {
+\NewDocumentCommand { \gprKeys } { m } {
 	\keys_set:nn { genealogy-profiles } { #1 }
 }
 
@@ -70,38 +70,38 @@
 % Formatting
 % 
 
-\seq_clear_new:N \g__gp_used_profile_ids_seq
-\bool_new:N \l__gp_id_exists_bool
+\seq_clear_new:N \g__gpr_used_profile_ids_seq
+\bool_new:N \l__gpr_id_exists_bool
 
-\cs_new_protected:Nn \gp_generate_unique_id:Nn
+\cs_new_protected:Nn \gpr_generate_unique_id:Nn
 {
-	\int_zero_new:N \l__gp_id_index_int
+	\int_zero_new:N \l__gpr_id_index_int
 
-	\bool_set_false:N \l__gp_id_exists_bool
-	\bool_do_until:nn { ! \l__gp_id_exists_bool } {
-		\int_incr:N \l__gp_id_index_int
-		\seq_if_in:NeTF \g__gp_used_profile_ids_seq { #2 \int_use:N \l__gp_id_index_int }
-			{ \bool_set_true:N \l__gp_id_exists_bool }
-			{ \bool_set_false:N \l__gp_id_exists_bool }
+	\bool_set_false:N \l__gpr_id_exists_bool
+	\bool_do_until:nn { ! \l__gpr_id_exists_bool } {
+		\int_incr:N \l__gpr_id_index_int
+		\seq_if_in:NeTF \g__gpr_used_profile_ids_seq { #2 \int_use:N \l__gpr_id_index_int }
+			{ \bool_set_true:N \l__gpr_id_exists_bool }
+			{ \bool_set_false:N \l__gpr_id_exists_bool }
 	}
 
-	\tl_set:Ne #1 { #2 \int_use:N \l__gp_id_index_int }
+	\tl_set:Ne #1 { #2 \int_use:N \l__gpr_id_index_int }
 }
-\cs_generate_variant:Nn \gp_generate_unique_id:Nn {
+\cs_generate_variant:Nn \gpr_generate_unique_id:Nn {
 	Ne
 }
 
 
-\cs_new_protected:Nn \gp_format_name:N
+\cs_new_protected:Nn \gpr_format_name:N
 {
-	\seq_clear_new:N \l__gp_formatted_name_seq
+	\seq_clear_new:N \l__gpr_formatted_name_seq
 
 	% TODO
-	\seq_put_right:Nn \l__gp_formatted_name_seq { \l__gp_given_name_tl }
-	\seq_put_right:Nn \l__gp_formatted_name_seq { \textit{ \l__gp_patronymic_tl } }
-	\seq_put_right:Nn \l__gp_formatted_name_seq { \textsc{ \l__gp_byname_tl } }
+	\seq_put_right:Nn \l__gpr_formatted_name_seq { \l__gpr_given_name_tl }
+	\seq_put_right:Nn \l__gpr_formatted_name_seq { \textit{ \l__gpr_patronymic_tl } }
+	\seq_put_right:Nn \l__gpr_formatted_name_seq { \textsc{ \l__gpr_byname_tl } }
 
-	\tl_set:Nn #1 { \seq_use:Nn \l__gp_formatted_name_seq {~} }
+	\tl_set:Nn #1 { \seq_use:Nn \l__gpr_formatted_name_seq {~} }
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -109,25 +109,25 @@
 % 
 
 % TODO starred with just name parts
-\NewDocumentEnvironment { genProfile } { O{} } {
+\NewDocumentEnvironment { gprProfile } { O{} } {
 	\group_begin:
-		\tl_use:N \l__gp_before_profile_tl
+		\tl_use:N \l__gpr_before_profile_tl
 		\keys_set:nn { genealogy-profiles / profile } { #1 }
-		\label{ genProfile:\tl_use:N \l__gp_id_tl }
-		\property_record:ee { genProfile:\tl_use:N \l__gp_id_tl } { label, page }
-		\tl_clear_new:N \l__gp_formatted_name_tl
-		\gp_format_name:N \l__gp_formatted_name_tl
-		\tl_use:N \l__gp_formatted_name_tl \hfill [\tl_use:N \l__gp_id_tl] \par
-		\tl_use:N \l__gp_split_profile_tl
+		\label{ gprProfile:\tl_use:N \l__gpr_id_tl }
+		\property_record:ee { gprProfile:\tl_use:N \l__gpr_id_tl } { label, page }
+		\tl_clear_new:N \l__gpr_formatted_name_tl
+		\gpr_format_name:N \l__gpr_formatted_name_tl
+		\tl_use:N \l__gpr_formatted_name_tl \hfill [\tl_use:N \l__gpr_id_tl] \par
+		\tl_use:N \l__gpr_split_profile_tl
 }{
-		\tl_use:N \l__gp_after_profile_tl
+		\tl_use:N \l__gpr_after_profile_tl
 	\group_end:
 }
 
 \NewDocumentCommand { \genRef } { o m } {
 	\IfValueTF{#1}{
 		#2
-		\textsuperscript{#1,~p.~\property_ref:nn {genProfile:#1} {page}}
+		\textsuperscript{#1,~p.~\property_ref:nn {gprProfile:#1} {page}}
 		% log from to
 	}{
 		% log unlinked

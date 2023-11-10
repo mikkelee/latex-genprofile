@@ -5,14 +5,14 @@
 \usepackage{genealogy-profiles}
 \usepackage[asterism]{sectionbreak}
 
-\gpKeys{
+\gprKeys{
 	split profile = {\hrule},
 	after profile = {\sectionbreak},
 }
 
 \begin{document}
 
-\begin{genProfile}[
+\begin{gprProfile}[
 	name parts = {Jens,Hansen},
 ]
 	Børn:
@@ -21,37 +21,37 @@
 	\item \genRef{Jens Jensen}
 	\end{enumerate}
 
-\end{genProfile}
+\end{gprProfile}
 
-\begin{genProfile}[
+\begin{gprProfile}[
 	name parts = {Hans,Jensen},
 ]
 	Far:
 	\genRef[JHx1]{Jens Hansen}
 
-\end{genProfile}
+\end{gprProfile}
 
-\begin{genProfile}[
+\begin{gprProfile}[
 	id = {ABC} ,
 	name parts = {Jens,Jensen},
 ]
 	Far:
 	\genRef{Jens Hansen}
 
-\end{genProfile}
+\end{gprProfile}
 
-\begin{genProfile}[
+\begin{gprProfile}[
 	name parts = {Jens,Hansen,Smed},
 ]
 	Urelateret person
 
-\end{genProfile}
+\end{gprProfile}
 
-\begin{genProfile}[
+\begin{gprProfile}[
 	name parts = {Henrik,Jensen},
 ]
 	Urelateret person
 
-\end{genProfile}
+\end{gprProfile}
 
 \end{document}
