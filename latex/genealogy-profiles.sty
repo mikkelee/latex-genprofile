@@ -73,6 +73,18 @@
 % \property_new:nnnn { genealogy-profiles / floruit }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Errors and warnings
+% 
+
+\msg_new:nnn
+{ genealogy-profiles } { reference-recorded }
+{ Reference ~ recorded ~ from ~ #1 ~ to ~ #2 }
+
+\msg_new:nnn
+{ genealogy-profiles } { unlabeled-reference }
+{ Unlabeled ~ reference: ~ #1 }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Formatting
 % 
 
@@ -141,9 +153,9 @@
 		\property_if_recorded:nF { gprProfile:#1 } {
 			\property_ref_undefined_warn:n { gprProfile:#1 }
 		}
-		% log from to
+		\msg_note:nnee { genealogy-profiles } { reference-recorded } { \tl_use:N \l__gpr_id_tl } { #1 }
 	}{
-		% log unlinked
+		\msg_warning:nnn { genealogy-profiles } { unlabeled-reference } { #2 }
 		{\color{red}#2}
 	}
 }
