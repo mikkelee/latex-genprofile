@@ -189,7 +189,7 @@
 	\group_end:
 }
 
-\NewDocumentCommand { \genRef } { o m } {
+\NewDocumentCommand { \gprRef } { o m } {
 	\IfValueTF{#1}{
 		#2
 		\textsuperscript{#1,~p.~\property_ref:nnn { gprProfile:#1 } { page }
@@ -205,7 +205,7 @@
 	}
 }
 
-\NewDocumentCommand { \genDate } { m } {
+\NewDocumentCommand { \gprDate } { m } {
 	% floruit
 	#1
 }
