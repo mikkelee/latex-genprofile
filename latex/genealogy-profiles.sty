@@ -84,8 +84,12 @@
 { genealogy-profiles } { unlabeled-reference }
 { Unlabeled ~ reference: ~ #1 }
 
+\msg_new:nnn
+{ genealogy-profiles } { missing-backref }
+{ Missing ~ backreference: ~ #1 ~ refers ~ to ~ #2 ~ but ~ not ~ vice ~ versa! }
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Formatting
+% IDs and references
 % 
 
 \seq_clear_new:N \g__gpr_used_profile_ids_seq
@@ -109,6 +113,45 @@
 	Ne
 }
 
+\prop_new:N \g__gpr_references_prop
+
+\cs_new_protected:Nn \gpr_save_reference:nn
+{
+	\prop_if_in:NnTF \g__gpr_references_prop { _#1_ } {
+		\prop_get:NnN \g__gpr_references_prop { _#1_ } \l_tmpa_tl
+	} {
+		\tl_clear:N \l_tmpa_tl
+	}
+	\tl_if_novalue:nT {\l_tmpa_tl} { \tl_clear:N \l_tmpa_tl }
+	\tl_put_right:Nn \l_tmpa_tl { _#2_ }
+	\prop_gput:NnV \g__gpr_references_prop { _#1_ } \l_tmpa_tl
+}
+\cs_generate_variant:Nn \gpr_save_reference:nn {
+	Vn
+}
+
+\cs_new_protected:Nn \gpr_check_single_reference:nn
+{
+	\regex_extract_all:nnN { _[^_]+_ } {#2} \l_tmpa_seq
+	\seq_map_inline:Nn \l_tmpa_seq {
+		\prop_get:NnN \g__gpr_references_prop {##1} \l_tmpa_tl
+		\regex_match:nVF { #1 } { \l_tmpa_tl } {
+			\msg_warning:nnnn { genealogy-profiles } { missing-backref }
+				{#1} {##1}
+		}
+	}
+}
+
+\cs_new:Nn \gpr_check_all_references:
+{
+	\prop_map_inline:Nn \g__gpr_references_prop {
+		\gpr_check_single_reference:nn {##1} {##2}
+	}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Formatting
+% 
 
 \cs_new_protected:Nn \gpr_style_name:N
 {
@@ -149,11 +192,13 @@
 \NewDocumentCommand { \genRef } { o m } {
 	\IfValueTF{#1}{
 		#2
-		\textsuperscript{#1,~p.~\property_ref:nnn { gprProfile:#1 } { page } { {\color{red}\bfseries ??} } }
-		\property_if_recorded:nF { gprProfile:#1 } {
-			\property_ref_undefined_warn:n { gprProfile:#1 }
-		}
-		\msg_note:nnee { genealogy-profiles } { reference-recorded } { \tl_use:N \l__gpr_id_tl } { #1 }
+		\textsuperscript{#1,~p.~\property_ref:nnn { gprProfile:#1 } { page }
+			{
+				{ \color{red}\bfseries ??} }
+				\property_ref_undefined_warn:n { gprProfile:#1 }
+			}
+%		\msg_note:nnee { genealogy-profiles } { reference-recorded } { \tl_use:N \l__gpr_id_tl } { #1 }
+		\gpr_save_reference:Vn \l__gpr_id_tl { #1 }
 	}{
 		\msg_warning:nnn { genealogy-profiles } { unlabeled-reference } { #2 }
 		{\color{red}#2}
@@ -163,4 +208,8 @@
 \NewDocumentCommand { \genDate } { m } {
 	% floruit
 	#1
+}
+
+\NewDocumentCommand { \gprCheckReferences } { } {
+	\gpr_check_all_references:
 }
