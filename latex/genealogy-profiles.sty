@@ -21,11 +21,15 @@
 	before~profile				.tl_set:N		= \l__gpr_before_profile_tl ,
 	split~profile				.tl_set:N		= \l__gpr_split_profile_tl ,
 	after~profile				.tl_set:N		= \l__gpr_after_profile_tl ,
+%	before/after header
 
 	givenname~style				.tl_set:N		= \l__gpr_givenname_style_tl ,
 	patronymic~style			.tl_set:N		= \l__gpr_patronymic_style_tl ,
 	surname~style				.tl_set:N		= \l__gpr_surname_style_tl ,
 	byname~style				.tl_set:N		= \l__gpr_byname_style_tl ,
+
+	header~format				.tl_set:N		= \l__gpr_header_format_tl ,
+%	tcolorbox
 }
 
 % set some defaults
@@ -177,6 +181,25 @@
 	\tl_set:Nn #1 { \seq_use:Nn \l__gpr_styled_name_seq {~} }
 }
 
+\cs_new_protected:Nn \gpr_format_floruit:N
+{
+	\int_compare:nNnTF { \seq_count:N \l__floruit_years_seq } = {1}
+	{
+		\tl_set:Ne #1 { floruit- = { \seq_item:Nn \l__floruit_years_seq {1} } }
+	}
+	{
+		\int_zero_new:N \l__gpr_floruit_from_int
+		\int_set:Nn \l__gpr_floruit_from_int { 9999 }
+		\int_zero_new:N \l__gpr_floruit_to_int
+		\int_set:Nn \l__gpr_floruit_to_int { 0000 }
+		\seq_map_inline:Nn \l__floruit_years_seq {
+			\int_set:Nn \l__gpr_floruit_from_int { \int_min:nn {##1} { \l__gpr_floruit_from_int } }
+			\int_set:Nn \l__gpr_floruit_to_int { \int_max:nn {##1} { \l__gpr_floruit_to_int } }
+		}
+		\tl_set:Ne #1 { floruit- = { \int_use:N \l__gpr_floruit_from_int / \int_use:N \l__gpr_floruit_to_int } }
+	}
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % User commands
 % 
@@ -202,12 +225,35 @@
 \gtrset{database~format=gtr_db_format}
 
 
+\property_new:nnnn { floruit-years } { now } { \c_novalue_tl } {
+	\seq_use:Nn \l__floruit_years_seq {,}
+}
+
+\prg_generate_conditional_variant:Nnn \property_if_recorded:nn
+	{ ee } { T }
+
 % TODO starred with just name parts
 \NewDocumentEnvironment { gprProfile } { O{} } {
 	\group_begin:
-		\tl_use:N \l__gpr_before_profile_tl
 		\keys_set:nn { genealogy-profiles / profile } { #1 }
+		\tl_use:N \l__gpr_before_profile_tl
+
+		% init floruit years
+		\seq_clear_new:N \l__floruit_years_seq
+		\property_if_recorded:eeT { gprProfile:\tl_use:N \l__gpr_id_tl } { floruit-years } {
+			\tl_set:Ne \l_tmpa_tl { \property_ref:ee { gprProfile:\tl_use:N \l__gpr_id_tl } { floruit-years } }
+			\seq_set_split:NnV \l__floruit_years_seq {,} \l_tmpa_tl
+		}
+		\seq_if_empty:NF \l__floruit_years_seq {
+			\tl_clear_new:N \l__formatted_floruit_tl
+			\gpr_format_floruit:N \l__formatted_floruit_tl
+			\gpr_set_gtr_keys:V \l__formatted_floruit_tl
+			% make sure vital data exists
+			\tl_put_right:Nn \l__gpr_vital_data_tl {~}
+		}
+
 		\property_record:ee { gprProfile:\tl_use:N \l__gpr_id_tl } { label, page }
+
 		\tl_clear_new:N \l__gpr_styled_name_tl
 		\gpr_style_name:N \l__gpr_styled_name_tl
 		\tl_use:N \l__gpr_styled_name_tl \hfill [\tl_use:N \l__gpr_id_tl] \par
@@ -220,6 +266,11 @@
 		\tl_use:N \l__gpr_split_profile_tl
 }{
 		\tl_use:N \l__gpr_after_profile_tl
+
+		% save floruit years
+		\seq_if_empty:NF \l__floruit_years_seq {
+			\property_record:ee { gprProfile:\tl_use:N \l__gpr_id_tl } { floruit-years }
+		}
 	\group_end:
 }
 
@@ -239,8 +290,11 @@
 	}
 }
 
-\NewDocumentCommand { \gprDate } { m } {
-	% floruit
+\NewDocumentCommand { \gprYear } { m } {
+	% record floruit year
+	\seq_if_in:NnF \l__floruit_years_seq {#1} {
+		\seq_gput_right:Nn \l__floruit_years_seq {#1}
+	}
 	#1
 }
 
