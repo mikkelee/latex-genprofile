@@ -124,7 +124,6 @@
 	\group_begin:
 		\tl_use:N \l__gpr_before_profile_tl
 		\keys_set:nn { genealogy-profiles / profile } { #1 }
-		\label{ gprProfile:\tl_use:N \l__gpr_id_tl }
 		\property_record:ee { gprProfile:\tl_use:N \l__gpr_id_tl } { label, page }
 		\tl_clear_new:N \l__gpr_styled_name_tl
 		\gpr_style_name:N \l__gpr_styled_name_tl
@@ -138,7 +137,10 @@
 \NewDocumentCommand { \genRef } { o m } {
 	\IfValueTF{#1}{
 		#2
-		\textsuperscript{#1,~p.~\property_ref:nn {gprProfile:#1} {page}}
+		\textsuperscript{#1,~p.~\property_ref:nnn { gprProfile:#1 } { page } { {\color{red}\bfseries ??} } }
+		\property_if_recorded:nF { gprProfile:#1 } {
+			\property_ref_undefined_warn:n { gprProfile:#1 }
+		}
 		% log from to
 	}{
 		% log unlinked
