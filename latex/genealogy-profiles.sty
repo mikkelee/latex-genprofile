@@ -117,14 +117,16 @@
 
 \cs_new_protected:Nn \gpr_save_reference:nn
 {
-	\prop_if_in:NnTF \g__gpr_references_prop { _#1_ } {
-		\prop_get:NnN \g__gpr_references_prop { _#1_ } \l_tmpa_tl
+	\prop_if_in:NnTF \g__gpr_references_prop { #1 } {
+		\prop_get:NnN \g__gpr_references_prop { #1 } \l_tmpa_tl
 	} {
 		\tl_clear:N \l_tmpa_tl
 	}
-	\tl_if_novalue:nT {\l_tmpa_tl} { \tl_clear:N \l_tmpa_tl }
+
+	% wrap ID as _ID_ so we can match them out later
 	\tl_put_right:Nn \l_tmpa_tl { _#2_ }
-	\prop_gput:NnV \g__gpr_references_prop { _#1_ } \l_tmpa_tl
+
+	\prop_gput:NnV \g__gpr_references_prop { #1 } \l_tmpa_tl
 }
 \cs_generate_variant:Nn \gpr_save_reference:nn {
 	Vn
@@ -132,12 +134,16 @@
 
 \cs_new_protected:Nn \gpr_check_single_reference:nn
 {
-	\regex_extract_all:nnN { _[^_]+_ } {#2} \l_tmpa_seq
+	\regex_extract_all:nnN { _([^_]+)_ } {#2} \l_tmpa_seq
 	\seq_map_inline:Nn \l_tmpa_seq {
-		\prop_get:NnN \g__gpr_references_prop {##1} \l_tmpa_tl
-		\regex_match:nVF { #1 } { \l_tmpa_tl } {
-			\msg_warning:nnnn { genealogy-profiles } { missing-backref }
-				{#1} {##1}
+		% dont test entire matches (_ID_), only submatches (ID)
+		\tl_if_eq:neF { _ } { \tl_item:nn { ##1 } {1} }
+		{
+			\prop_get:NnN \g__gpr_references_prop {##1} \l_tmpa_tl
+			\regex_match:nVF { #1 } { \l_tmpa_tl } {
+				\msg_warning:nnnn { genealogy-profiles } { missing-backref }
+					{#1} {##1}
+			}
 		}
 	}
 }
