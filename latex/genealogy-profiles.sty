@@ -73,7 +73,7 @@
 	vital~data					.tl_set:N		= \l__gpr_vital_data_tl ,
 }
 
-\NewDocumentCommand { \gprKeys } { m } {
+\NewDocumentCommand { \gprKeys } { +m } {
 	\keys_set:nn { genealogy-profiles } { #1 }
 }
 
