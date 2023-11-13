@@ -12,14 +12,14 @@
 	name part order = { givenname, patronymic, byname },
 	patronymic style = {\itshape},
 	byname style = {\scshape},
-	before profile = {
+	begin profile = {
 		\begin{tcolorbox}[
 			breakable,
 			title = {\NAME \hfill \ID}
 		]
 	},
-	split profile = \tcblower,
-	after profile = {\end{tcolorbox}},
+	after vital data = \tcblower,
+	end profile = {\end{tcolorbox}},
 }
 
 \begin{document}

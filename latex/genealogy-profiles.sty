@@ -1,5 +1,5 @@
-\RequirePackage{expl3}[2023/10/10]
-\ProvidesExplPackage{genealogy-profiles}{2023/11/09}{0.1}{Macros for creating genealogical profiles}
+\RequirePackage{expl3}[2023-10-10]
+\ProvidesExplPackage{genealogy-profiles}{2023/11/13}{0.1}{Macros for creating genealogical profiles}
 
 % License: CC-BY-SA 4.0
 % Author: Mikkel Eide Eriksen <mikkel.eriksen@gmail.com>
@@ -18,13 +18,14 @@
 			\seq_gset_from_clist:Nn \g__gpr_name_part_order_seq {#1}
 		} ,
 
-	% formatting & styling
-	before~profile				.tl_set:N		= \l__gpr_before_profile_tl ,
-	split~profile				.tl_set:N		= \l__gpr_split_profile_tl ,
-	after~profile				.tl_set:N		= \l__gpr_after_profile_tl ,
-%	before/after header
-%	reference style
+	% formatting profiles
+	begin~profile				.tl_set:N		= \l__gpr_begin_profile_tl ,
+	after~header				.tl_set:N		= \l__gpr_after_header_tl ,
+	after~vital~data			.tl_set:N		= \l__gpr_after_vital_data_tl ,
+	end~profile					.tl_set:N		= \l__gpr_end_profile_tl ,
+%	reference style?
 
+	% name styling
 	givenname~style				.tl_set:N		= \l__gpr_givenname_style_tl ,
 	patronymic~style			.tl_set:N		= \l__gpr_patronymic_style_tl ,
 	surname~style				.tl_set:N		= \l__gpr_surname_style_tl ,
@@ -75,8 +76,6 @@
 \NewDocumentCommand { \gprKeys } { m } {
 	\keys_set:nn { genealogy-profiles } { #1 }
 }
-
-% \property_new:nnnn { genealogy-profiles / floruit }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Errors and warnings
@@ -262,14 +261,14 @@
 		\MakeLinkTarget*{ gprProfile:\tl_use:N \l__gpr_id_tl }
 
 		% begin typesetting
-		\tl_use:N \l__gpr_before_profile_tl
+		\tl_use:N \l__gpr_begin_profile_tl
 
 		% record properties for id
 		\property_record:ee { gprProfile:\tl_use:N \l__gpr_id_tl } { label, page, target }
 
 		\bool_if:NT \l__gpr_autoheader_bool {
 			\tl_use:N \l__gpr_styled_name_tl \hfill \tl_use:N \l__gpr_id_tl
-			\tl_use:N \l__gpr_split_profile_tl
+			\tl_use:N \l__gpr_after_header_tl
 		}
 
 		% typeset vital data
@@ -277,11 +276,11 @@
 			\gpr_set_gtr_keys:V \l__gpr_vital_data_tl
 			\gtrPrintDatabase
 
-			\tl_use:N \l__gpr_split_profile_tl
+			\tl_use:N \l__gpr_after_vital_data_tl
 		}
 }{
 		% end typesetting
-		\tl_use:N \l__gpr_after_profile_tl
+		\tl_use:N \l__gpr_end_profile_tl
 
 		% save floruit years
 		\seq_if_empty:NF \l__floruit_years_seq {
