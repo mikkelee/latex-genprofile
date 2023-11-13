@@ -47,28 +47,7 @@
 	patronymic					.tl_set:N		= \l__gpr_patronymic_tl ,
 	surname						.tl_set:N		= \l__gpr_surname_tl ,
 	byname						.tl_set:N		= \l__gpr_byname_tl ,
-	name~parts					.code:n			= {
-			\seq_set_from_clist:Nn \l_tmpa_seq {#1}
-			\tl_clear_new:N \l__gpr_tmpid_tl
-			\seq_map_indexed_inline:Nn \g__gpr_name_part_order_seq {
-				\tl_set:ce { l__gpr_##2_tl } { \seq_item:Nn \l_tmpa_seq {##1} } 
-
-				% build id
-				\tl_if_empty:cTF { l__gpr_##2_tl } {
-					\tl_put_right:Ne \l__gpr_tmpid_tl { x }
-				} {
-					\tl_put_right:Ne \l__gpr_tmpid_tl { \tl_item:cn { l__gpr_##2_tl } {1} }
-				}
-			}
-
-			% set id unless already defined
-			\tl_if_empty:NT \l__gpr_id_tl {
-				\tl_clear_new:N \l__gpr_generated_id_tl
-				\gpr_generate_unique_id:Ne \l__gpr_generated_id_tl {\l__gpr_tmpid_tl}
-				\seq_gput_right:Ne \g__gpr_used_profile_ids_seq \l__gpr_generated_id_tl
-				\tl_set_eq:NN \l__gpr_id_tl \l__gpr_generated_id_tl
-			}
-		} ,
+	name~parts					.code:n			= \gpr_handle_name_parts:n ,
 
 	vital~data					.tl_set:N		= \l__gpr_vital_data_tl ,
 }
@@ -92,6 +71,37 @@
 \msg_new:nnn
 { genealogy-profiles } { missing-backref }
 { Missing ~ backreference: ~ #1 ~ refers ~ to ~ #2 ~ but ~ not ~ vice ~ versa! }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Key Handlers
+% 
+
+\cs_new_protected:Nn \gpr_handle_name_parts:n
+{
+	\seq_set_from_clist:Nn \l_tmpa_seq {#1}
+	\tl_clear_new:N \l__gpr_tmpid_tl
+	\seq_map_indexed_inline:Nn \g__gpr_name_part_order_seq {
+		\tl_set:ce { l__gpr_##2_tl } { \seq_item:Nn \l_tmpa_seq {##1} } 
+
+		% build id
+		\tl_if_empty:cTF { l__gpr_##2_tl } {
+			\tl_put_right:Ne \l__gpr_tmpid_tl { - }
+		} {
+			\tl_put_right:Ne \l__gpr_tmpid_tl { \tl_item:cn { l__gpr_##2_tl } {1} }
+		}
+	}
+
+	% set id unless already defined
+	\tl_if_empty:NT \l__gpr_id_tl {
+		\tl_clear_new:N \l__gpr_generated_id_tl
+		\gpr_generate_unique_id:Ne \l__gpr_generated_id_tl {\l__gpr_tmpid_tl}
+		\seq_gput_right:Ne \g__gpr_used_profile_ids_seq \l__gpr_generated_id_tl
+		\tl_set_eq:NN \l__gpr_id_tl \l__gpr_generated_id_tl
+	}
+}
+\cs_generate_variant:Nn \gpr_handle_name_parts:n {
+	V
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % IDs and references
