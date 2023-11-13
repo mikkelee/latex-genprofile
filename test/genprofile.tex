@@ -4,13 +4,24 @@
 
 \usepackage{genealogy-profiles}
 \usepackage[asterism]{sectionbreak}
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable}
+\usepackage{lipsum}
 
 \gprKeys{
 	name part order = { givenname, patronymic, byname },
+%	profile style = tcolorbox,
+%	tcolorbox settings = {breakable},
 	patronymic style = {\itshape},
 	byname style = {\scshape},
-	split profile = {\hrule},
-	after profile = {\sectionbreak},
+	before profile = {
+		\begin{tcolorbox}[
+			breakable,
+			title = {\NAME \hfill \ID}
+		]
+	},
+	split profile = \tcblower,
+	after profile = {\end{tcolorbox}},
 }
 
 \begin{document}
@@ -67,6 +78,8 @@
 ]
 	Hustru:
 	\gprRef{Kirstine Larsdatter}
+	
+	\lipsum[1-2]
 
 \end{gprProfile}
 

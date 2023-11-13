@@ -22,14 +22,15 @@
 	split~profile				.tl_set:N		= \l__gpr_split_profile_tl ,
 	after~profile				.tl_set:N		= \l__gpr_after_profile_tl ,
 %	before/after header
+%	reference style
 
 	givenname~style				.tl_set:N		= \l__gpr_givenname_style_tl ,
 	patronymic~style			.tl_set:N		= \l__gpr_patronymic_style_tl ,
 	surname~style				.tl_set:N		= \l__gpr_surname_style_tl ,
 	byname~style				.tl_set:N		= \l__gpr_byname_style_tl ,
 
+	autoheader		 			.bool_set:N 	= \l__gpr_autoheader_bool ,
 	header~format				.tl_set:N		= \l__gpr_header_format_tl ,
-%	tcolorbox
 }
 
 % set some defaults
@@ -236,7 +237,6 @@
 \NewDocumentEnvironment { gprProfile } { O{} } {
 	\group_begin:
 		\keys_set:nn { genealogy-profiles / profile } { #1 }
-		\tl_use:N \l__gpr_before_profile_tl
 
 		% init floruit years
 		\seq_clear_new:N \l__floruit_years_seq
@@ -252,19 +252,31 @@
 			\tl_put_right:Nn \l__gpr_vital_data_tl {~}
 		}
 
-		\property_record:ee { gprProfile:\tl_use:N \l__gpr_id_tl } { label, page }
-
+		% format name
 		\tl_clear_new:N \l__gpr_styled_name_tl
 		\gpr_style_name:N \l__gpr_styled_name_tl
-		\tl_use:N \l__gpr_styled_name_tl \hfill [\tl_use:N \l__gpr_id_tl] \par
+		\cs_set:Npe \NAME { \tl_use:N \l__gpr_styled_name_tl }
+		\cs_set:Npe \ID { \tl_use:N \l__gpr_id_tl }
 
+		% begin typesetting
+		\tl_use:N \l__gpr_before_profile_tl
+		\bool_if:NT \l__gpr_autoheader_bool {
+			\tl_use:N \l__gpr_styled_name_tl \hfill \tl_use:N \l__gpr_id_tl
+			\tl_use:N \l__gpr_split_profile_tl
+		}
+
+		% record label & page for id
+		\property_record:ee { gprProfile:\tl_use:N \l__gpr_id_tl } { label, page }
+
+		% typeset vital data
 		\tl_if_empty:NF \l__gpr_vital_data_tl {
 			\gpr_set_gtr_keys:V \l__gpr_vital_data_tl
 			\gtrPrintDatabase
-		}
 
-		\tl_use:N \l__gpr_split_profile_tl
+			\tl_use:N \l__gpr_split_profile_tl
+		}
 }{
+		% end typesetting
 		\tl_use:N \l__gpr_after_profile_tl
 
 		% save floruit years
