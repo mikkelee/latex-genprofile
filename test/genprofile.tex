@@ -81,6 +81,28 @@
 
 \end{gprProfile}
 
+
+\gprKeys{
+	name part order = { givenname, patronymic, byname },
+	patronymic style = {\itshape},
+	byname style = {\scshape},
+	begin profile = {},
+	after header = {\par},
+	after vital data = {\vspace*{5pt}\hrule\vspace*{5pt}},
+	end profile = {\sectionbreak},
+	autoheader,
+}
+
+\begin{gprProfile}[
+	name parts = {Ole,Jensen},
+	vital data = {
+		birth = {1810}{Denmark}
+	}
+]
+	Far:
+	\gprRef[JHx1]{Jens Hansen}
+\end{gprProfile}
+
 \gprCheckReferences{}
 
 \end{document}
