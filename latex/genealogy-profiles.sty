@@ -4,8 +4,9 @@
 % License: CC-BY-SA 4.0
 % Author: Mikkel Eide Eriksen <mikkel.eriksen@gmail.com>
 
-\RequirePackage{xcolor}
+\RequirePackage{hyperref}
 \RequirePackage{genealogytree}
+\RequirePackage{xcolor}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Key setup
@@ -30,7 +31,6 @@
 	byname~style				.tl_set:N		= \l__gpr_byname_style_tl ,
 
 	autoheader		 			.bool_set:N 	= \l__gpr_autoheader_bool ,
-	header~format				.tl_set:N		= \l__gpr_header_format_tl ,
 }
 
 % set some defaults
@@ -258,15 +258,19 @@
 		\cs_set:Npe \NAME { \tl_use:N \l__gpr_styled_name_tl }
 		\cs_set:Npe \ID { \tl_use:N \l__gpr_id_tl }
 
+		% set hyperref target just before typesetting
+		\MakeLinkTarget*{ gprProfile:\tl_use:N \l__gpr_id_tl }
+
 		% begin typesetting
 		\tl_use:N \l__gpr_before_profile_tl
+
+		% record properties for id
+		\property_record:ee { gprProfile:\tl_use:N \l__gpr_id_tl } { label, page, target }
+
 		\bool_if:NT \l__gpr_autoheader_bool {
 			\tl_use:N \l__gpr_styled_name_tl \hfill \tl_use:N \l__gpr_id_tl
 			\tl_use:N \l__gpr_split_profile_tl
 		}
-
-		% record label & page for id
-		\property_record:ee { gprProfile:\tl_use:N \l__gpr_id_tl } { label, page }
 
 		% typeset vital data
 		\tl_if_empty:NF \l__gpr_vital_data_tl {
@@ -289,11 +293,12 @@
 \NewDocumentCommand { \gprRef } { o m } {
 	\IfValueTF{#1}{
 		#2
-		\textsuperscript{#1,~p.~\property_ref:nnn { gprProfile:#1 } { page }
-			{
-				{ \color{red}\bfseries ??} }
-				\property_ref_undefined_warn:n { gprProfile:#1 }
-			}
+		\textsuperscript{
+			\hyperlink{ \property_ref:nn { gprProfile:#1 } { target } }{#1}~
+			p.~
+			\property_ref:nnn { gprProfile:#1 } { page } { { \color{red}\bfseries ??} }
+			\property_ref_undefined_warn:n { gprProfile:#1 }
+		}
 %		\msg_note:nnee { genealogy-profiles } { reference-recorded } { \tl_use:N \l__gpr_id_tl } { #1 }
 		\gpr_save_reference:Vn \l__gpr_id_tl { #1 }
 	}{
