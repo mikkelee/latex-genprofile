@@ -5,6 +5,7 @@
 % Author: Mikkel Eide Eriksen <mikkel.eriksen@gmail.com>
 
 \RequirePackage{xcolor}
+\RequirePackage{genealogytree}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Key setup
@@ -63,7 +64,7 @@
 			}
 		} ,
 
-%	vital data / genealogytree
+	vital~data					.tl_set:N		= \l__gpr_vital_data_tl ,
 }
 
 \NewDocumentCommand { \gprKeys } { m } {
@@ -180,6 +181,27 @@
 % User commands
 % 
 
+\cs_new_protected:Nn \gpr_set_gtr_keys:n
+{
+	\gtrset{ database/.cd, #1 }
+}
+\cs_generate_variant:Nn \gpr_set_gtr_keys:n {
+	V
+}
+
+\gtrDeclareDatabaseFormat{gtr_db_format}{}{%
+  \begin{gtrprintlist}{\par}{\unskip,\ }{\unskip.}{\unskip}%
+    \gtr@list@event{birth}%
+    \gtr@list@event{baptism}%
+    \gtr@list@event{floruit}%
+    \gtr@list@event{death}%
+    \gtr@list@event{burial}%
+  \end{gtrprintlist}%
+  \gtr@print@infolist%
+}
+\gtrset{database~format=gtr_db_format}
+
+
 % TODO starred with just name parts
 \NewDocumentEnvironment { gprProfile } { O{} } {
 	\group_begin:
@@ -189,6 +211,12 @@
 		\tl_clear_new:N \l__gpr_styled_name_tl
 		\gpr_style_name:N \l__gpr_styled_name_tl
 		\tl_use:N \l__gpr_styled_name_tl \hfill [\tl_use:N \l__gpr_id_tl] \par
+
+		\tl_if_empty:NF \l__gpr_vital_data_tl {
+			\gpr_set_gtr_keys:V \l__gpr_vital_data_tl
+			\gtrPrintDatabase
+		}
+
 		\tl_use:N \l__gpr_split_profile_tl
 }{
 		\tl_use:N \l__gpr_after_profile_tl
