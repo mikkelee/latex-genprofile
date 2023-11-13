@@ -289,14 +289,26 @@
 	\group_end:
 }
 
+\cs_new_protected:Nn \gpr_super_sub:nn
+{
+	\group_begin:
+		\hbox_set:Nn \l_tmpa_box { \textsuperscript {#1} }
+		\hbox_set:Nn \l_tmpb_box { \textsubscript {#2} }
+		\hbox_to_wd:nn
+			{ \dim_max:nn { \box_wd:N \l_tmpa_box } { \box_wd:N \l_tmpb_box } }
+			{ \hbox_overlap_right:n { \box_use:N \l_tmpa_box } \box_use:N \l_tmpb_box }
+	\group_end:
+}
+
 \NewDocumentCommand { \gprRef } { o m } {
 	\IfValueTF{#1}{
-		#2
-		\textsuperscript{
-			\hyperlink{ \property_ref:nn { gprProfile:#1 } { target } }{#1}~
-			p.~
-			\property_ref:nnn { gprProfile:#1 } { page } { { \color{red}\bfseries ??} }
-			\property_ref_undefined_warn:n { gprProfile:#1 }
+		\hyperlink{ \property_ref:nn { gprProfile:#1 } { target } } {
+			#2
+			\gpr_super_sub:nn {#1} {
+				p.~
+				\property_ref:nnn { gprProfile:#1 } { page } { { \color{red}\bfseries??} }
+				\property_ref_undefined_warn:n { gprProfile:#1 }
+			}
 		}
 %		\msg_note:nnee { genealogy-profiles } { reference-recorded } { \tl_use:N \l__gpr_id_tl } { #1 }
 		\gpr_save_reference:Vn \l__gpr_id_tl { #1 }
