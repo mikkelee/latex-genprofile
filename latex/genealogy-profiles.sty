@@ -271,7 +271,7 @@
 }
 
 \prg_generate_conditional_variant:Nnn \property_if_recorded:nn
-	{ ee } { T }
+	{ en } { T }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % User commands
@@ -283,7 +283,7 @@
 
 		% init floruit years
 		\seq_clear_new:N \l__floruit_years_seq
-		\property_if_recorded:eeT { gprProfile:\tl_use:N \l__gpr_id_tl } { floruit-years } {
+		\property_if_recorded:enT { gprProfile:\tl_use:N \l__gpr_id_tl } { floruit-years } {
 			\tl_set:Ne \l_tmpa_tl { \property_ref:ee { gprProfile:\tl_use:N \l__gpr_id_tl } { floruit-years } }
 			\seq_set_split:NnV \l__floruit_years_seq {,} \l_tmpa_tl
 
