@@ -299,9 +299,10 @@
 % User commands
 % 
 
-\NewDocumentEnvironment { gprProfile* } { O{} } {
+\NewDocumentEnvironment { gprProfile* } { O{} O{} } {
 	\group_begin:
 		\keys_set:nn { genealogy-profiles / profile } { #1 }
+		\keys_set:nn { genealogy-profiles / profile } { vital~data={#2} }
 
 		% init floruit years
 		\seq_clear_new:N \l__floruit_years_seq
@@ -311,9 +312,7 @@
 
 			\tl_clear_new:N \l__formatted_floruit_tl
 			\gpr_format_floruit:N \l__formatted_floruit_tl
-			\gpr_set_genealogytree_keys:V \l__formatted_floruit_tl
-			% make sure vital data exists
-			\tl_put_right:Nn \l__gpr_vital_data_tl {~}
+			\tl_put_right:Ne \l__gpr_vital_data_tl {,\tl_use:N \l__formatted_floruit_tl }
 		}
 
 		% format name
@@ -356,15 +355,13 @@
 	\group_end:
 }
 
-\NewDocumentEnvironment { gprProfile } { m O{} } {
-	\tl_set:Nn \l__gpr_fullname_tl {#1}
-	\seq_set_split:Nnn \l_tmpa_seq { ~ } { #1 }
+\NewDocumentEnvironment { gprProfile } { O{} m O{} } {
+	\tl_set:Nn \l__gpr_fullname_tl {#2}
+	\seq_set_split:Nnn \l_tmpa_seq { ~ } { #2 }
 	\tl_set:Ne \l_tmpa_tl { \seq_use:Nn \l_tmpa_seq {,} }
 	\gpr_handle_name_parts:V \l_tmpa_tl
 
-	\begin{gprProfile*}[
-		#2
-	]
+	\begin{gprProfile*}[#1][#3]
 }{
 	\end{gprProfile*}
 }

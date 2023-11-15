@@ -27,9 +27,7 @@
 \begin{document}
 
 \begin{gprProfile}{Jens Hansen}[
-	vital data = {
-		birth = {1790}{Denmark}
-	}
+	birth = {1790}{Denmark}
 ]
 	Børn:
 	\begin{enumerate}
@@ -41,10 +39,8 @@
 \end{gprProfile}
 
 \begin{gprProfile}{Hans Jensen}[
-	vital data = {
-		birth = {1820}{Denmark},
-		death = {1850}{Denmark}
-	}
+	birth = {1820}{Denmark},
+	death = {1850}{Denmark}
 ]
 	Far:
 	\gprRef[JH-1]{Jens Hansen}
@@ -54,9 +50,7 @@
 
 \end{gprProfile}
 
-\begin{gprProfile}{Jens Jensen}[
-	id = {ABC} ,
-]
+\begin{gprProfile}[id=ABC]{Jens Jensen}
 	Far:
 	\gprRef[JH-1]{Jens Hansen}
 
@@ -77,6 +71,11 @@
 
 \end{gprProfile}
 
+\begin{gprProfile*}[givenname=Jens, byname=Bødker][birth={1805}{Sverige}]
+	Urelateret person.
+
+\end{gprProfile*}
+
 
 \gprKeys{
 	name part order = { givenname, patronymic, byname },
@@ -90,9 +89,7 @@
 }
 
 \begin{gprProfile}{Ole Jensen}[
-	vital data = {
-		birth = {1810}{Denmark}
-	}
+	birth = {1810}{Denmark}
 ]
 	Far:
 	\gprRef[JH-1]{Jens Hansen}
