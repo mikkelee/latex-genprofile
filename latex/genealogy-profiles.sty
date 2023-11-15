@@ -81,7 +81,7 @@
 { Missing ~ backreference: ~ #1 ~ refers ~ to ~ #2 ~ but ~ not ~ vice ~ versa! }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Key Handlers
+% Names
 % 
 
 \cs_new_protected:Nn \gpr_handle_name_parts:n
@@ -89,25 +89,8 @@
 	\tl_set:Nn \l__gpr_fullname_tl {#1}
 
 	\seq_set_split:Nnn \l_tmpa_seq {~} {#1}
-	\tl_clear_new:N \l__gpr_tmpid_tl
 	\seq_map_indexed_inline:Nn \g__gpr_name_part_order_seq {
 		\tl_set:ce { l__gpr_##2_tl } { \seq_item:Nn \l_tmpa_seq {##1} }
-
-		% build id
-		\tl_if_empty:cTF { l__gpr_##2_tl } {
-			\tl_put_right:Ne \l__gpr_tmpid_tl { - }
-		} {
-			\tl_put_right:Ne \l__gpr_tmpid_tl { \tl_item:cn { l__gpr_##2_tl } {1} }
-		}
-	}
-
-	% set id unless already defined
-	% TODO separate, also use fullname (otherwise some have no id)
-	\tl_if_empty:NT \l__gpr_id_tl {
-		\tl_clear_new:N \l__gpr_generated_id_tl
-		\gpr_generate_unique_id:Ne \l__gpr_generated_id_tl {\l__gpr_tmpid_tl}
-		\seq_gput_right:Ne \g__gpr_used_profile_ids_seq \l__gpr_generated_id_tl
-		\tl_set_eq:NN \l__gpr_id_tl \l__gpr_generated_id_tl
 	}
 }
 \cs_generate_variant:Nn \gpr_handle_name_parts:n {
@@ -115,13 +98,13 @@
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% IDs and references
+% IDs
 % 
 
 \seq_clear_new:N \g__gpr_used_profile_ids_seq
 \bool_new:N \l__gpr_id_exists_bool
 
-\cs_new_protected:Nn \gpr_generate_unique_id:Nn
+\cs_new_protected:Nn \gpr_find_unused_id:Nn
 {
 	\int_zero_new:N \l__gpr_id_index_int
 
@@ -135,9 +118,34 @@
 
 	\tl_set:Ne #1 { #2 \int_use:N \l__gpr_id_index_int }
 }
-\cs_generate_variant:Nn \gpr_generate_unique_id:Nn {
-	Ne
+\cs_generate_variant:Nn \gpr_find_unused_id:Nn {
+	NV
 }
+
+\cs_new_protected:Nn \gpr_generate_unique_id:
+{
+	\tl_clear_new:N \l_tmpa_tl
+
+	% TODO fullname
+	% build id from initials
+	\seq_map_indexed_inline:Nn \g__gpr_name_part_order_seq {
+		\tl_if_empty:cTF { l__gpr_##2_tl } {
+			\tl_put_right:Ne \l_tmpa_tl { - }
+		} {
+			\tl_put_right:Ne \l_tmpa_tl { \tl_item:cn { l__gpr_##2_tl } {1} }
+		}
+	}
+
+	% set id unless already defined
+	\tl_clear_new:N \l__gpr_generated_id_tl
+	\gpr_find_unused_id:NV \l__gpr_generated_id_tl \l_tmpa_tl
+	\seq_gput_right:NV \g__gpr_used_profile_ids_seq \l__gpr_generated_id_tl
+	\tl_set_eq:NN \l__gpr_id_tl \l__gpr_generated_id_tl
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% References
+% 
 
 \prop_new:N \g__gpr_references_prop
 
@@ -181,6 +189,10 @@
 	}
 }
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Indexing
+% 
+
 \cs_new:Nn \gpr_add_to_single_index:nn {
 	\index[#1]{#2}
 }
@@ -216,19 +228,10 @@
 \cs_new:Nn \gpr_add_to_indexes:nn
 {
 	\group_begin:
-		\tl_if_novalue:nF {#2} {
-			% a name was supplied, so handle it
-			\gpr_handle_name_parts:n {#2}
-		}
-
 		\tl_if_blank:VF \l__gpr_id_index_tl {
 			\tl_if_novalue:nF {#1} {
-				\tl_if_novalue:nTF {#2} {
-					\gpr_add_to_single_index:Ve \l__gpr_id_index_tl
-						{#1 ~ \tl_use:N \l__gpr_fullname_tl }
-				} {
-					\gpr_add_to_single_index:Vn \l__gpr_id_index_tl {#1 ~ #2}
-				}
+				\gpr_add_to_single_index:Ve \l__gpr_id_index_tl
+					{#1 ~ \tl_use:N \l__gpr_fullname_tl }
 			}
 		}
 
@@ -381,6 +384,23 @@
 		\keys_set:nn { genealogy-profiles / profile } { #1 }
 		\keys_set:nn { genealogy-profiles / profile } { vital~data={#2} }
 
+		\tl_if_empty:NTF \l__gpr_fullname_tl {
+			% if no full name supplied, build one from given parts
+			\seq_clear:N \l_tmpa_seq
+			\seq_map_inline:Nn \g__gpr_name_part_order_seq {
+				\tl_if_blank:vF { l__gpr_##1_tl } {
+					\seq_put_right:Nv \l_tmpa_seq { l__gpr_##1_tl }
+				}
+			}
+			\tl_set:Ne \l__gpr_fullname_tl { \seq_use:Nn \l_tmpa_seq {~} }
+		} {
+			% otherwise use full name to split into parts
+			\gpr_handle_name_parts:V \l__gpr_fullname_tl
+		}
+		\tl_if_empty:NT \l__gpr_id_tl {
+			\gpr_generate_unique_id:
+		}
+
 		% init floruit years
 		\seq_clear_new:N \l__floruit_years_seq
 		\property_if_recorded:enT { gprProfile:\tl_use:N \l__gpr_id_tl } { floruit-years } {
@@ -433,30 +453,31 @@
 }
 
 \NewDocumentEnvironment { gprProfile } { O{} m O{} } {
-	\gpr_handle_name_parts:n {#2}
-
-	\begin{gprProfile*}[#1][#3]
+	\begin{gprProfile*}[fullname={#2}, #1][#3]
 }{
 	\end{gprProfile*}
 }
 
-\NewDocumentCommand { \gprRef } { o m o } {
-	\gpr_add_to_indexes:nn {#1} {#2}
-	\IfValueTF{#1}{
-		\hyperlink{ \property_ref:nn { gprProfile:#1 } { target } } {
-			\IfValueTF {#3} {#3} {#2}
-			\gpr_super_subscript:nn {#1} {
-				p.~
-				\property_ref:nnn { gprProfile:#1 } { page } { { \color{red}\bfseries??} }
-				\property_ref_undefined_warn:n { gprProfile:#1 }
+\NewDocumentCommand { \gprRef } { s o m o } {
+	\group_begin:
+		\gpr_handle_name_parts:n {#3}
+		\gpr_add_to_indexes:nn {#2} {#3}
+		\IfValueTF{#2}{
+			\hyperlink{ \property_ref:nn { gprProfile:#2 } { target } } {
+				\IfValueTF {#4} {#4} {#3}
+				\gpr_super_subscript:nn {#2} {
+					p.~
+					\property_ref:nnn { gprProfile:#2 } { page } { { \color{red}\bfseries??} }
+					\property_ref_undefined_warn:n { gprProfile:#2 }
+				}
 			}
+%			\msg_note:nnee { genealogy-profiles } { reference-recorded } { \tl_use:N \l__gpr_id_tl } { #2 }
+			\gpr_save_reference:Vn \l__gpr_id_tl { #2 }
+		}{
+			\msg_warning:nnn { genealogy-profiles } { unlabeled-reference } { #3 } % TODO page number
+			{\color{red} \IfValueTF {#4} {#4} {#3} }
 		}
-%		\msg_note:nnee { genealogy-profiles } { reference-recorded } { \tl_use:N \l__gpr_id_tl } { #1 }
-		\gpr_save_reference:Vn \l__gpr_id_tl { #1 }
-	}{
-		\msg_warning:nnn { genealogy-profiles } { unlabeled-reference } { #2 }
-		{\color{red} \IfValueTF {#3} {#3} {#2} }
-	}
+	\group_end:
 }
 
 \NewDocumentCommand { \gprYear } { m } {
