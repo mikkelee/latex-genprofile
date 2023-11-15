@@ -344,10 +344,10 @@
 	\end{gprProfile*}
 }
 
-\NewDocumentCommand { \gprRef } { o m } {
+\NewDocumentCommand { \gprRef } { o m o } {
 	\IfValueTF{#1}{
 		\hyperlink{ \property_ref:nn { gprProfile:#1 } { target } } {
-			#2
+			\IfValueTF {#3} {#3} {#2}
 			\gpr_super_subscript:nn {#1} {
 				p.~
 				\property_ref:nnn { gprProfile:#1 } { page } { { \color{red}\bfseries??} }
@@ -358,7 +358,7 @@
 		\gpr_save_reference:Vn \l__gpr_id_tl { #1 }
 	}{
 		\msg_warning:nnn { genealogy-profiles } { unlabeled-reference } { #2 }
-		{\color{red}#2}
+		{\color{red} \IfValueTF {#3} {#3} {#2} }
 	}
 }
 
