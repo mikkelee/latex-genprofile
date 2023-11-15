@@ -233,11 +233,28 @@
 	V
 }
 
+\prg_new_protected_conditional:Nnn \gpr_if_lifespan_defined: {T,F,TF}
+{
+	\bool_if:nTF {
+		 ( \cs_if_exist_p:c { gtrDBbirthyear }
+		|| \cs_if_exist_p:c { gtrDBbaptismyear } )
+		&&
+		 ( \cs_if_exist_p:c { gtrDBdeathyear }
+		|| \cs_if_exist_p:c { gtrDBburialyear } )
+	} {
+		\prg_return_true:
+	} {
+		\prg_return_false:
+	}
+}
+
 \gtrDeclareDatabaseFormat{gtr_db_format}{}{%
   \begin{gtrprintlist}{\par}{\unskip,\ }{\unskip.}{\unskip}%
     \gtr@list@event{birth}%
     \gtr@list@event{baptism}%
-    \gtr@list@event{floruit}%
+    \gpr_if_lifespan_defined:F {
+    	\gtr@list@event{floruit}
+    }
     \gtr@list@event{death}%
     \gtr@list@event{burial}%
   \end{gtrprintlist}%
