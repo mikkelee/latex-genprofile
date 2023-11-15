@@ -17,6 +17,7 @@
 	name~part~order				.code:n			= {
 			\seq_gset_from_clist:Nn \g__gpr_name_part_order_seq {#1}
 		} ,
+	name~handler				.code:n			= \gpr_handle_name_parts:n ,
 
 	% formatting profiles
 	begin~profile				.tl_set:N		= \l__gpr_begin_profile_tl ,
@@ -26,12 +27,20 @@
 %	reference style?
 
 	% name styling
+	fullname~style				.tl_set:N		= \l__gpr_fullname_style_tl ,
 	givenname~style				.tl_set:N		= \l__gpr_givenname_style_tl ,
 	patronymic~style			.tl_set:N		= \l__gpr_patronymic_style_tl ,
 	surname~style				.tl_set:N		= \l__gpr_surname_style_tl ,
 	byname~style				.tl_set:N		= \l__gpr_byname_style_tl ,
 
 	autoheader		 			.bool_set:N 	= \l__gpr_autoheader_bool ,
+
+	% indexes
+	id~index					.tl_set:N		= \l__gpr_id_index_tl ,
+	fullname~index				.tl_set:N		= \l__gpr_fullname_index_tl ,
+	patronymic~index			.tl_set:N		= \l__gpr_patronymic_index_tl ,
+	surname~index				.tl_set:N		= \l__gpr_surname_index_tl ,
+	byname~index				.tl_set:N		= \l__gpr_byname_index_tl ,
 }
 
 % set some defaults
@@ -47,7 +56,6 @@
 	patronymic					.tl_set:N		= \l__gpr_patronymic_tl ,
 	surname						.tl_set:N		= \l__gpr_surname_tl ,
 	byname						.tl_set:N		= \l__gpr_byname_tl ,
-	name~parts					.code:n			= \gpr_handle_name_parts:n ,
 
 	vital~data					.tl_set:N		= \l__gpr_vital_data_tl ,
 }
@@ -78,10 +86,12 @@
 
 \cs_new_protected:Nn \gpr_handle_name_parts:n
 {
-	\seq_set_from_clist:Nn \l_tmpa_seq {#1}
+	\tl_set:Nn \l__gpr_fullname_tl {#1}
+
+	\seq_set_split:Nnn \l_tmpa_seq {~} {#1}
 	\tl_clear_new:N \l__gpr_tmpid_tl
 	\seq_map_indexed_inline:Nn \g__gpr_name_part_order_seq {
-		\tl_set:ce { l__gpr_##2_tl } { \seq_item:Nn \l_tmpa_seq {##1} } 
+		\tl_set:ce { l__gpr_##2_tl } { \seq_item:Nn \l_tmpa_seq {##1} }
 
 		% build id
 		\tl_if_empty:cTF { l__gpr_##2_tl } {
@@ -92,6 +102,7 @@
 	}
 
 	% set id unless already defined
+	% TODO separate, also use fullname (otherwise some have no id)
 	\tl_if_empty:NT \l__gpr_id_tl {
 		\tl_clear_new:N \l__gpr_generated_id_tl
 		\gpr_generate_unique_id:Ne \l__gpr_generated_id_tl {\l__gpr_tmpid_tl}
@@ -171,21 +182,87 @@
 }
 
 \cs_new:Nn \gpr_add_to_single_index:nn {
-	\index[gpr-#1]{#2}
+	\index[#1]{#2}
 }
 \cs_generate_variant:Nn \gpr_add_to_single_index:nn {
-	nV
+	VV, Ve, Vn
+}
+
+\prg_generate_conditional_variant:Nnn \tl_if_blank:n
+	{ v, V } { F }
+
+\cs_new:Nn \gpr_build_index_entry:Nnn {
+	\seq_clear:N \l_tmpa_seq
+	\clist_map_inline:nn {#2} {
+		\tl_if_blank:vF { l__gpr_##1_tl } {
+			\seq_put_right:Nv \l_tmpa_seq { l__gpr_##1_tl }
+		}
+	}
+
+	\seq_clear:N \l_tmpb_seq
+	\clist_map_inline:nn {#3} {
+		\tl_if_blank:vF { l__gpr_##1_tl } {
+			\seq_put_right:Nv \l_tmpb_seq { l__gpr_##1_tl }
+		}
+	}
+
+	\tl_set:Ne #1 {
+		\seq_use:Nn \l_tmpa_seq {~}
+		,~
+		\seq_use:Nn \l_tmpb_seq {~}
+	}
 }
 
 \cs_new:Nn \gpr_add_to_indexes:nn
 {
-	\tl_if_novalue:nF {#1} { \gpr_add_to_single_index:nn { id } {#1} }
 	\group_begin:
 		\tl_if_novalue:nF {#2} {
 			% a name was supplied, so handle it
 			\gpr_handle_name_parts:n {#2}
 		}
-		\gpr_add_to_single_index:nV { fullname } \l__gpr_fullname_tl
+
+		\tl_if_blank:VF \l__gpr_id_index_tl {
+			\tl_if_novalue:nF {#1} {
+				\tl_if_novalue:nTF {#2} {
+					\gpr_add_to_single_index:Ve \l__gpr_id_index_tl
+						{#1 ~ \tl_use:N \l__gpr_fullname_tl }
+				} {
+					\gpr_add_to_single_index:Vn \l__gpr_id_index_tl {#1 ~ #2}
+				}
+			}
+		}
+
+		\tl_if_blank:VF \l__gpr_fullname_index_tl {
+			\gpr_add_to_single_index:VV \l__gpr_fullname_index_tl \l__gpr_fullname_tl
+		}
+
+		\tl_if_blank:VF \l__gpr_patronymic_index_tl {
+			\tl_if_blank:VF \l__gpr_patronymic_tl {
+				\gpr_build_index_entry:Nnn \l_tmpa_tl
+					{ patronymic, surname, byname }
+					{ givenname }
+			
+				\gpr_add_to_single_index:VV \l__gpr_patronymic_index_tl \l_tmpa_tl
+			}
+		}
+		\tl_if_blank:VF \l__gpr_surname_index_tl {
+			\tl_if_blank:VF \l__gpr_surname_tl {
+				\gpr_build_index_entry:Nnn \l_tmpa_tl
+					{ surname, byname }
+					{ givenname, patronymic }
+			
+				\gpr_add_to_single_index:VV \l__gpr_surname_index_tl \l_tmpa_tl
+			}
+		}
+		\tl_if_blank:VF \l__gpr_byname_index_tl {
+			\tl_if_blank:VF \l__gpr_byname_tl {
+				\gpr_build_index_entry:Nnn \l_tmpa_tl
+					{ byname }
+					{ givenname, patronymic, surname }
+			
+				\gpr_add_to_single_index:VV \l__gpr_byname_index_tl \l_tmpa_tl
+			}
+		}
 	\group_end:
 }
 \cs_generate_variant:Nn \gpr_add_to_indexes:nn {
@@ -356,10 +433,7 @@
 }
 
 \NewDocumentEnvironment { gprProfile } { O{} m O{} } {
-	\tl_set:Nn \l__gpr_fullname_tl {#2}
-	\seq_set_split:Nnn \l_tmpa_seq { ~ } { #2 }
-	\tl_set:Ne \l_tmpa_tl { \seq_use:Nn \l_tmpa_seq {,} }
-	\gpr_handle_name_parts:V \l_tmpa_tl
+	\gpr_handle_name_parts:n {#2}
 
 	\begin{gprProfile*}[#1][#3]
 }{
@@ -395,14 +469,4 @@
 
 \NewDocumentCommand { \gprCheckReferences } { } {
 	\gpr_check_all_references:
-}
-\NewDocumentCommand { \gprMakeIndex } { } {
-	\usepackage{imakeidx}
-	\makeindex[name=gpr-id]
-	\makeindex[name=gpr-fullname]
-}
-
-\NewDocumentCommand { \gprPrintIndex } { } {
-	\printindex[gpr-id]
-	\printindex[gpr-fullname]
 }

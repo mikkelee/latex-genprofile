@@ -8,7 +8,12 @@
 \tcbuselibrary{breakable}
 \usepackage{lipsum}
 
-\gprMakeIndex{}
+\usepackage{imakeidx}
+\makeindex[name=gpr-id, title=ID-register]
+\makeindex[name=gpr-fullname, title={Register på fuldt navn}]
+\makeindex[name=gpr-patronymic, title={Patronymregister}]
+\makeindex[name=gpr-surname, title={Efternavneregister}]
+\makeindex[name=gpr-byname, title={Tilnavneregister}]
 
 \gprKeys{
 	name part order = { givenname, patronymic, byname },
@@ -22,6 +27,11 @@
 	},
 	after vital data = \tcblower,
 	end profile = {\end{tcolorbox}},
+	id index = gpr-id,
+	fullname index = gpr-fullname,
+	patronymic index = gpr-patronymic,
+	surname index = gpr-surname,
+	byname index = gpr-byname,
 }
 
 \begin{document}
@@ -97,6 +107,10 @@
 
 \gprCheckReferences{}
 
-\gprPrintIndex{}
+\printindex[gpr-id]
+\printindex[gpr-fullname]
+\printindex[gpr-patronymic]
+\printindex[gpr-surname]
+\printindex[gpr-byname]
 
 \end{document}
