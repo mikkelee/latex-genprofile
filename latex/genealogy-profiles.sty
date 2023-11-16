@@ -379,7 +379,7 @@
 % User commands
 % 
 
-\NewDocumentEnvironment { gprProfile* } { O{} O{} } {
+\NewDocumentEnvironment { gprProfile* } { m O{} } {
 	\group_begin:
 		\keys_set:nn { genealogy-profiles / profile } { #1 }
 		\keys_set:nn { genealogy-profiles / profile } { vital~data={#2} }
@@ -460,7 +460,7 @@
 }
 
 \NewDocumentEnvironment { gprProfile } { O{} m O{} } {
-	\begin{gprProfile*}[fullname={#2}, #1][#3]
+	\begin{gprProfile*}{fullname={#2}, #1}[#3]
 }{
 	\end{gprProfile*}
 }
