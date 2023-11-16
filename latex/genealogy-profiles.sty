@@ -14,10 +14,24 @@
 
 \keys_define:nn { genealogy-profiles }
 {
-	name~part~order				.code:n			= {
-			\seq_gset_from_clist:Nn \g__gpr_name_part_order_seq {#1}
+	name~type					.choices:nn		= {
+			given~and~surname ,
+			nordic~historical ,
+		} {
+			\int_case:nn { \l_keys_choice_int } {
+				{1} { 
+					\seq_gset_from_clist:Nn \g__gpr_name_part_order_seq
+						{ givenname, surname }
+				}
+				{2} {
+					\seq_gset_from_clist:Nn \g__gpr_name_part_order_seq
+						{ givenname, patronymic, byname }
+				}
+			}
+			
+			
 		} ,
-	name~handler				.code:n			= \gpr_handle_name_parts:n ,
+	name~type					.default:n		= { given~and~surname } ,
 
 	% formatting profiles
 	begin~profile				.tl_set:N		= \l__gpr_begin_profile_tl ,
@@ -40,11 +54,6 @@
 	patronymic~index			.tl_set:N		= \l__gpr_patronymic_index_tl ,
 	surname~index				.tl_set:N		= \l__gpr_surname_index_tl ,
 	byname~index				.tl_set:N		= \l__gpr_byname_index_tl ,
-}
-
-% set some defaults
-\keys_set:nn { genealogy-profiles } {
-	name~part~order = { givenname, patronymic, surname, byname } ,
 }
 
 \keys_define:nn { genealogy-profiles / profile }
@@ -94,7 +103,7 @@
 
 \tl_const:Ne \c_gpr_underscore_tl { \char_generate:nn { `_ } { 8 } }
 
-\cs_new_protected:Nn \gpr_handle_name_parts:n
+\cs_new_protected:Nn \gpr_name_handler:n
 {
 	\tl_set:Nn \l__gpr_fullname_tl {#1}
 	\tl_replace_all:NVn \l__gpr_fullname_tl \c_gpr_underscore_tl { ~ }
@@ -106,7 +115,7 @@
 		\tl_set:cV { l__gpr_##2_tl } \l_tmpa_tl
 	}
 }
-\cs_generate_variant:Nn \gpr_handle_name_parts:n {
+\cs_generate_variant:Nn \gpr_name_handler:n {
 	V
 }
 
@@ -412,7 +421,7 @@
 			\tl_set:Ne \l__gpr_fullname_tl { \seq_use:Nn \l_tmpa_seq {~} }
 		} {
 			% otherwise use full name to split into parts
-			\gpr_handle_name_parts:V \l__gpr_fullname_tl
+			\gpr_name_handler:V \l__gpr_fullname_tl
 		}
 		\tl_if_empty:NTF \l__gpr_id_tl {
 			\gpr_generate_unique_id:
@@ -489,7 +498,7 @@
 
 \NewDocumentCommand { \gprRef } { s o m o } {
 	\group_begin:
-		\gpr_handle_name_parts:n {#3}
+		\gpr_name_handler:n {#3}
 		\gpr_add_to_indexes:nn {#2} {#3}
 		\IfValueTF{#2}{
 			\hyperlink{ \property_ref:nn { gprProfile:#2 } { target } } {
