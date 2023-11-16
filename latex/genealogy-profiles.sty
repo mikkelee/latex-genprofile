@@ -415,8 +415,15 @@
 		% format name
 		\tl_clear_new:N \l__gpr_styled_name_tl
 		\gpr_style_name:N \l__gpr_styled_name_tl
-		\cs_set:Npe \NAME { \tl_use:N \l__gpr_styled_name_tl }
-		\cs_set:Npe \ID { \tl_use:N \l__gpr_id_tl }
+
+		% placeholders for id and names
+		\cs_set:Npe \gprID { \tl_use:N \l__gpr_id_tl }
+		\cs_set:Npe \gprStyledName { \tl_use:N \l__gpr_styled_name_tl }
+		\cs_set:Npe \gprFullName { \tl_use:N \l__gpr_fullname_tl }
+		\cs_set:Npe \gprGivenName { \tl_use:N \l__gpr_givenname_tl }
+		\cs_set:Npe \gprPatronymic { \tl_use:N \l__gpr_patronymic_tl }
+		\cs_set:Npe \gprSurname { \tl_use:N \l__gpr_surname_tl }
+		\cs_set:Npe \gprByname { \tl_use:N \l__gpr_byname_tl }
 
 		% set hyperref target just before typesetting
 		\MakeLinkTarget*{ gprProfile:\tl_use:N \l__gpr_id_tl }
