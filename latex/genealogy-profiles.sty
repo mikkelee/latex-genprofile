@@ -76,6 +76,10 @@
 { Unlabeled ~ reference: ~ #1 }
 
 \msg_new:nnn
+{ genealogy-profiles } { unknown-reference }
+{ Reference ~ to ~ unknown ~ id: ~ #1 }
+
+\msg_new:nnn
 { genealogy-profiles } { missing-backref }
 { Missing ~ backreference: ~ #1 ~ refers ~ to ~ #2 ~ but ~ not ~ vice ~ versa! }
 
@@ -172,10 +176,14 @@
 		% dont test entire matches (_ID_), only submatches (ID)
 		\tl_if_eq:neF { _ } { \tl_item:nn { ##1 } {1} }
 		{
-			\prop_get:NnN \g__gpr_references_prop {##1} \l_tmpa_tl
-			\regex_match:nVF { #1 } { \l_tmpa_tl } {
-				\msg_warning:nnnn { genealogy-profiles } { missing-backref }
-					{#1} {##1}
+			\seq_if_in:NnTF \g__gpr_used_profile_ids_seq { ##1 } {
+				\prop_get:NnN \g__gpr_references_prop {##1} \l_tmpa_tl
+				\regex_match:nVF { #1 } { \l_tmpa_tl } {
+					\msg_warning:nnnn { genealogy-profiles } { missing-backref }
+						{#1} {##1}
+				}
+			} {
+				\msg_warning:nnn { genealogy-profiles } { unknown-reference } { ##1 }
 			}
 		}
 	}
