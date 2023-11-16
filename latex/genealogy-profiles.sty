@@ -92,13 +92,18 @@
 % Names
 % 
 
+\tl_const:Ne \c_gpr_underscore_tl { \char_generate:nn { `_ } { 8 } }
+
 \cs_new_protected:Nn \gpr_handle_name_parts:n
 {
 	\tl_set:Nn \l__gpr_fullname_tl {#1}
+	\tl_replace_all:NVn \l__gpr_fullname_tl \c_gpr_underscore_tl { ~ }
 
 	\seq_set_split:Nnn \l_tmpa_seq {~} {#1}
 	\seq_map_indexed_inline:Nn \g__gpr_name_part_order_seq {
-		\tl_set:ce { l__gpr_##2_tl } { \seq_item:Nn \l_tmpa_seq {##1} }
+		\tl_set:Ne \l_tmpa_tl { \seq_item:Nn \l_tmpa_seq {##1} }
+		\tl_replace_all:NVn \l_tmpa_tl \c_gpr_underscore_tl { ~ }
+		\tl_set:cV { l__gpr_##2_tl } \l_tmpa_tl
 	}
 }
 \cs_generate_variant:Nn \gpr_handle_name_parts:n {
