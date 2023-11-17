@@ -424,8 +424,7 @@
 
 \NewDocumentEnvironment { gprProfile* } { m O{} } {
 	\group_begin:
-		\keys_set:nn { genealogy-profiles / profile } { #1 }
-		\keys_set:nn { genealogy-profiles / profile } { vital~data={#2} }
+		\keys_set:nn { genealogy-profiles / profile } { #1, vital~data={#2} }
 
 		\tl_if_empty:NTF \l__gpr_fullname_tl {
 			% if no full name supplied, build one from given parts
