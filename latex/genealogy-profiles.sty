@@ -53,6 +53,8 @@
 	patronymic~index			.tl_set:N		= \l__gpr_patronymic_index_tl ,
 	surname~index				.tl_set:N		= \l__gpr_surname_index_tl ,
 	byname~index				.tl_set:N		= \l__gpr_byname_index_tl ,
+
+	nest~index~entries			.bool_set:N 	= \l__gpr_nest_index_entries_bool ,
 }
 
 \keys_define:nn { genealogy-profiles / profile }
@@ -262,7 +264,7 @@
 
 	\tl_set:Ne #1 {
 		\seq_use:Nn \l_tmpa_seq {~}
-		,~
+		\bool_if:NTF \l__gpr_nest_index_entries_bool {!} {,~}
 		\seq_use:Nn \l_tmpb_seq {~}
 	}
 }
