@@ -80,11 +80,11 @@
 
 \msg_new:nnn
 { genealogy-profiles } { reference-recorded }
-{ Reference ~ recorded ~ from ~ #1 ~ to ~ #2 }
+{ Reference ~ recorded ~ from ~ #1 ~ to ~ #2 ~ on ~ input ~ line ~ #3 }
 
 \msg_new:nnn
 { genealogy-profiles } { unlabeled-reference }
-{ Unlabeled ~ reference: ~ #1 }
+{ Unlabeled ~ reference: ~ #1 ~ on ~ input ~ line ~ #2 }
 
 \msg_new:nnn
 { genealogy-profiles } { unknown-reference }
@@ -92,7 +92,7 @@
 
 \msg_new:nnn
 { genealogy-profiles } { missing-backref }
-{ Missing ~ backreference: ~ #1 ~ refers ~ to ~ #2 ~ but ~ not ~ vice ~ versa! }
+{ Missing ~ backreference: ~ #1 ~ refers ~ to ~ #2 ~ but ~ not ~ vice ~ versa }
 
 \msg_new:nnnn
 { genealogy-profiles } { reused-id }
@@ -227,11 +227,11 @@
 			\seq_if_in:NnTF \g__gpr_used_profile_ids_seq { ##1 } {
 				\prop_get:NnN \g__gpr_references_prop {##1} \l_tmpa_tl
 				\regex_match:nVF { #1 } { \l_tmpa_tl } {
-					\msg_warning:nnnn { genealogy-profiles } { missing-backref }
+					\msg_warning:nnee { genealogy-profiles } { missing-backref }
 						{#1} {##1}
 				}
 			} {
-				\msg_warning:nnn { genealogy-profiles } { unknown-reference } { ##1 }
+				\msg_warning:nne { genealogy-profiles } { unknown-reference } { ##1 }
 			}
 		}
 	}
@@ -446,7 +446,7 @@
 			\gpr_generate_unique_id:
 		} {
 			\seq_if_in:NVT \g__gpr_used_profile_ids_seq \l__gpr_id_tl {
-				\msg_error:nne { genealogy-profiles } { reused-id } { \l__gpr_id_tl }
+				\msg_error:nnee { genealogy-profiles } { reused-id } { \l__gpr_id_tl } {\the\inputlineno}
 			}
 			\seq_gput_right:NV \g__gpr_used_profile_ids_seq \l__gpr_id_tl
 		}
@@ -536,10 +536,10 @@
 					\property_ref_undefined_warn:n { gprProfile:#2 }
 				}
 			}
-%			\msg_note:nnee { genealogy-profiles } { reference-recorded } { \tl_use:N \l__gpr_id_tl } { #2 }
+%			\msg_note:nneee { genealogy-profiles } { reference-recorded } { \tl_use:N \l__gpr_id_tl } { #2 } {\the\inputlineno}
 			\gpr_save_reference:Vn \l__gpr_id_tl { #2 }
 		}{
-			\msg_warning:nnn { genealogy-profiles } { unlabeled-reference } { #3 } % TODO page number
+			\msg_warning:nnee { genealogy-profiles } { unlabeled-reference } { #3 } {\the\inputlineno}
 			{ \color_select:n {red} #3 }
 		}
 	\group_end:
