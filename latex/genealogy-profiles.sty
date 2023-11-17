@@ -6,7 +6,6 @@
 
 \RequirePackage{genealogytree}
 \RequirePackage{hyperref}
-\RequirePackage{xcolor}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Key setup
@@ -512,7 +511,9 @@
 				\IfValueTF {#4} {#4} {#3}
 				\gpr_super_subscript:nn {#2} {
 					p.~
-					\property_ref:nnn { gprProfile:#2 } { page } { { \color{red}\bfseries??} }
+					\property_ref:nnn { gprProfile:#2 } { page } {
+						{ \color_select:n {red} \bfseries ?? }
+					}
 					\property_ref_undefined_warn:n { gprProfile:#2 }
 				}
 			}
@@ -520,7 +521,7 @@
 			\gpr_save_reference:Vn \l__gpr_id_tl { #2 }
 		}{
 			\msg_warning:nnn { genealogy-profiles } { unlabeled-reference } { #3 } % TODO page number
-			{\color{red} \IfValueTF {#4} {#4} {#3} }
+			{ \color_select:n {red} \IfValueTF {#4} {#4} {#3} }
 		}
 	\group_end:
 }
