@@ -271,7 +271,7 @@
 	}
 }
 
-\cs_new:Nn \gpr_add_to_indexes:nn
+\cs_new:Nn \gpr_add_to_indexes:n
 {
 	\group_begin:
 		\tl_if_blank:VF \l__gpr_id_index_tl {
@@ -314,8 +314,8 @@
 		}
 	\group_end:
 }
-\cs_generate_variant:Nn \gpr_add_to_indexes:nn {
-	VV
+\cs_generate_variant:Nn \gpr_add_to_indexes:n {
+	V
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -475,7 +475,7 @@
 		% record properties for id
 		\property_record:ee { gprProfile:\tl_use:N \l__gpr_id_tl } { label, page, target }
 
-		\gpr_add_to_indexes:VV \l__gpr_id_tl \c_novalue_tl
+		\gpr_add_to_indexes:V \l__gpr_id_tl
 
 		\bool_if:NT \l__gpr_autoheader_bool {
 			\tl_use:N \l__gpr_styled_name_tl \hfill \tl_use:N \l__gpr_id_tl
@@ -509,7 +509,7 @@
 \NewDocumentCommand { \gprRef } { s o m o } {
 	\group_begin:
 		\gpr_name_handler:n {#3}
-		\gpr_add_to_indexes:nn {#2} {#3}
+		\gpr_add_to_indexes:n {#2}
 		\IfValueTF{#2}{
 			\hyperlink{ \property_ref:nn { gprProfile:#2 } { target } } {
 				\IfValueTF {#4} {#4} {#3}
