@@ -107,7 +107,7 @@
 	{ v, V } { F }
 
 \prg_generate_conditional_variant:Nnn \property_if_recorded:nn
-	{ en } { T }
+	{ en } { T, TF }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Properties
@@ -518,13 +518,17 @@
 	\end{gprProfile*}
 }
 
-\NewDocumentCommand { \gprRef } { s o m o } {
+\NewDocumentCommand { \gprRef } { s o m } {
 	\group_begin:
-		\gpr_name_handler:n {#3}
-		\gpr_add_to_indexes:n {#2}
+		\property_if_recorded:enTF { gprProfile:#2 } { full-name } {
+			\gpr_name_handler:n { \property_ref:ee { gprProfile:#2 } { full-name } }
+		} {
+			\gpr_name_handler:n { #3 }
+		}
+		\gpr_add_to_indexes:n { #2 }
 		\IfValueTF{#2}{
 			\hyperlink{ \property_ref:nn { gprProfile:#2 } { target } } {
-				\IfValueTF {#4} {#4} {#3}
+				#3
 				\gpr_super_subscript:nn {#2} {
 					p.~
 					\property_ref:nnn { gprProfile:#2 } { page } {
@@ -537,7 +541,7 @@
 			\gpr_save_reference:Vn \l__gpr_id_tl { #2 }
 		}{
 			\msg_warning:nnn { genealogy-profiles } { unlabeled-reference } { #3 } % TODO page number
-			{ \color_select:n {red} \IfValueTF {#4} {#4} {#3} }
+			{ \color_select:n {red} #3 }
 		}
 	\group_end:
 }
