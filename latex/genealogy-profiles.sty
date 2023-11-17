@@ -117,6 +117,11 @@
 	\seq_use:Nn \l__floruit_years_seq {,}
 }
 
+\tl_clear_new:N \l__gpr_fullname_raw_tl
+\property_new:nnnn { full-name } { now } { \c_novalue_tl } {
+	\tl_use:N \l__gpr_fullname_raw_tl
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Names
 % 
@@ -431,10 +436,13 @@
 				}
 			}
 			\tl_set:Ne \l__gpr_fullname_tl { \seq_use:Nn \l_tmpa_seq {~} }
+			\tl_set_eq:NN \l__gpr_fullname_raw_tl \l__gpr_fullname_tl
 		} {
 			% otherwise use full name to split into parts
+			\tl_set_eq:NN \l__gpr_fullname_raw_tl \l__gpr_fullname_tl
 			\gpr_name_handler:V \l__gpr_fullname_tl
 		}
+
 		\tl_if_empty:NTF \l__gpr_id_tl {
 			\gpr_generate_unique_id:
 		} {
@@ -443,6 +451,8 @@
 			}
 			\seq_gput_right:NV \g__gpr_used_profile_ids_seq \l__gpr_id_tl
 		}
+
+		\property_record:ee { gprProfile:\tl_use:N \l__gpr_id_tl } { full-name }
 
 		% init floruit years
 		\seq_clear_new:N \l__floruit_years_seq
