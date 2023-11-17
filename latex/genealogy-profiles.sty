@@ -132,7 +132,9 @@
 	\seq_map_indexed_inline:Nn \g__gpr_name_part_order_seq {
 		\tl_set:Ne \l_tmpa_tl { \seq_item:Nn \l_tmpa_seq {##1} }
 		\tl_replace_all:NVn \l_tmpa_tl \c_gpr_underscore_tl { ~ }
-		\tl_if_blank:VF \l_tmpa_tl {
+		\tl_if_blank:VTF \l_tmpa_tl {
+			\tl_clear:c { l__gpr_##2_tl }
+		} {
 			\tl_set:cV { l__gpr_##2_tl } \l_tmpa_tl
 		}
 	}
