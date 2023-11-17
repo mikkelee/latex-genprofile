@@ -55,6 +55,7 @@
 	byname~index				.tl_set:N		= \l__gpr_byname_index_tl ,
 
 	nest~index~entries			.bool_set:N 	= \l__gpr_nest_index_entries_bool ,
+	id~in~index~entries			.bool_set:N 	= \l__gpr_id_in_index_entries_bool ,
 }
 
 \keys_define:nn { genealogy-profiles / profile }
@@ -264,8 +265,9 @@
 
 	\tl_set:Ne #1 {
 		\seq_use:Nn \l_tmpa_seq {~}
-		\bool_if:NTF \l__gpr_nest_index_entries_bool {!} {,~}
+		\bool_if:NTF \l__gpr_nest_index_entries_bool { ! } { ,~ }
 		\seq_use:Nn \l_tmpb_seq {~}
+		\bool_if:NT \l__gpr_id_in_index_entries_bool { ~ (\tl_use:N \l__gpr_id_tl) }
 	}
 }
 
