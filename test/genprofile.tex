@@ -9,11 +9,11 @@
 \usepackage{lipsum}
 
 \usepackage{imakeidx}
-\makeindex[name=gpr-id, title=ID-register]
-\makeindex[name=gpr-fullname, title={Register på fuldt navn}]
-\makeindex[name=gpr-patronymic, title={Patronymregister}]
-\makeindex[name=gpr-surname, title={Efternavneregister}]
-\makeindex[name=gpr-byname, title={Tilnavneregister}]
+\makeindex[name=gpr-id, title=ID-register, options=-s genprofile]
+\makeindex[name=gpr-fullname, title={Register på fuldt navn}, options=-s genprofile]
+\makeindex[name=gpr-patronymic, title={Patronymregister}, options=-s genprofile]
+\makeindex[name=gpr-surname, title={Efternavneregister}, options=-s genprofile]
+\makeindex[name=gpr-byname, title={Tilnavneregister}, options=-s genprofile]
 
 \gprKeys{
 	name type = nordic historical,
