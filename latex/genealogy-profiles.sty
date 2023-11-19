@@ -45,6 +45,7 @@
 	surname~style				.tl_set:N		= \l__gpr_surname_style_tl ,
 	byname~style				.tl_set:N		= \l__gpr_byname_style_tl ,
 
+	header~format				.tl_set:N		= \l__gpr_header_format_tl ,
 	autoheader		 			.bool_set:N 	= \l__gpr_autoheader_bool ,
 
 	% indexes
@@ -72,6 +73,11 @@
 
 \NewDocumentCommand { \gprKeys } { +m } {
 	\keys_set:nn { genealogy-profiles } { #1 }
+}
+
+% set some defaults
+\keys_set:nn { genealogy-profiles } {
+	header~format = { \gprStyledName \hfill \gprID },
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -488,7 +494,7 @@
 		\gpr_add_to_indexes:V \l__gpr_id_tl
 
 		\bool_if:NT \l__gpr_autoheader_bool {
-			\tl_use:N \l__gpr_styled_name_tl \hfill \tl_use:N \l__gpr_id_tl
+			\tl_use:N \l__gpr_header_format_tl
 			\tl_use:N \l__gpr_after_header_tl
 		}
 
