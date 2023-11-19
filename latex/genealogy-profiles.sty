@@ -30,7 +30,6 @@
 			
 			
 		} ,
-	name~type					.default:n		= { given~and~surname } ,
 
 	% formatting profiles
 	begin~profile				.tl_set:N		= \l__gpr_begin_profile_tl ,
@@ -80,7 +79,8 @@
 
 % set some defaults
 \keys_set:nn { genealogy-profiles } {
-	header~format = { \gprStyledName \hfill \gprID },
+	name~type = { given~and~surname } ,
+	header~format = { \gprStyledName \hfill \gprID } ,
 	reference~handler = { \gpr_super_subscript:nn {#1} {#2} } ,
 	page~number~handler = { p.~#1 } ,
 }
