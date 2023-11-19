@@ -35,7 +35,7 @@
 	% formatting profiles
 	begin~profile				.tl_set:N		= \l__gpr_begin_profile_tl ,
 	after~header				.tl_set:N		= \l__gpr_after_header_tl ,
-	after~vital~data			.tl_set:N		= \l__gpr_after_vital_data_tl ,
+	after~life~events			.tl_set:N		= \l__gpr_after_life_events_tl ,
 	end~profile					.tl_set:N		= \l__gpr_end_profile_tl ,
 %	reference style?
 
@@ -68,7 +68,7 @@
 	surname						.tl_set:N		= \l__gpr_surname_tl ,
 	byname						.tl_set:N		= \l__gpr_byname_tl ,
 
-	vital~data					.tl_set:N		= \l__gpr_vital_data_tl ,
+	life~events					.tl_set:N		= \l__gpr_life_events_tl ,
 }
 
 \NewDocumentCommand { \gprKeys } { +m } {
@@ -429,7 +429,7 @@
 
 \NewDocumentEnvironment { gprProfile* } { m O{} } {
 	\group_begin:
-		\keys_set:nn { genealogy-profiles / profile } { #1, vital~data={#2} }
+		\keys_set:nn { genealogy-profiles / profile } { #1, life~events={#2} }
 
 		\tl_if_empty:NTF \l__gpr_fullname_tl {
 			% if no full name supplied, build one from given parts
@@ -466,7 +466,7 @@
 
 			\tl_clear_new:N \l__formatted_gpr_floruit_tl
 			\gpr_format_floruit:N \l__formatted_gpr_floruit_tl
-			\tl_put_right:Ne \l__gpr_vital_data_tl {,\tl_use:N \l__formatted_gpr_floruit_tl }
+			\tl_put_right:Ne \l__gpr_life_events_tl {,\tl_use:N \l__formatted_gpr_floruit_tl }
 		}
 
 		% format name
@@ -498,12 +498,12 @@
 			\tl_use:N \l__gpr_after_header_tl
 		}
 
-		% typeset vital data
-		\tl_if_empty:NF \l__gpr_vital_data_tl {
-			\gpr_set_genealogytree_keys:V \l__gpr_vital_data_tl
+		% typeset life events
+		\tl_if_empty:NF \l__gpr_life_events_tl {
+			\gpr_set_genealogytree_keys:V \l__gpr_life_events_tl
 			\gtrPrintDatabase
 
-			\tl_use:N \l__gpr_after_vital_data_tl
+			\tl_use:N \l__gpr_after_life_events_tl
 		}
 }{
 		% end typesetting
