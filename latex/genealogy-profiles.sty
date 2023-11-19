@@ -37,7 +37,9 @@
 	after~header				.tl_set:N		= \l__gpr_after_header_tl ,
 	after~life~events			.tl_set:N		= \l__gpr_after_life_events_tl ,
 	end~profile					.tl_set:N		= \l__gpr_end_profile_tl ,
-%	reference style?
+
+	reference~handler			.cs_set:Np		= \gpr__reference_style_handler:nn #1#2 ,
+	page~number~handler			.cs_set:Np		= \gpr__page_number_handler:n #1 ,
 
 	% name part styling
 	givenname~style				.tl_set:N		= \l__gpr_givenname_style_tl ,
@@ -79,6 +81,8 @@
 % set some defaults
 \keys_set:nn { genealogy-profiles } {
 	header~format = { \gprStyledName \hfill \gprID },
+	reference~handler = { \gpr_super_subscript:nn {#1} {#2} } ,
+	page~number~handler = { p.~#1 } ,
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -539,10 +543,11 @@
 		\IfValueTF{#2}{
 			\hyperlink{ \property_ref:nn { gpr/#2/target } { target } } {
 				#3
-				\gpr_super_subscript:nn {#2} {
-					p.~
-					\property_ref:nnn { gpr/#2/target } { page } {
-						{ \color_select:n {red} \bfseries ?? }
+				\gpr__reference_style_handler:nn {#2} {
+					\gpr__page_number_handler:n {
+						\property_ref:nnn { gpr/#2/target } { page } {
+							{ \color_select:n {red} \bfseries ?? }
+						}
 					}
 					\property_ref_undefined_warn:n { gpr/#2/target }
 				}

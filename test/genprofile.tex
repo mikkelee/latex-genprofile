@@ -34,6 +34,9 @@
 	byname index = gpr-byname,
 	nest index entries,
 	main index entry style = textbf,
+	page number handler = {s.~#1},
+%	reference handler = {\textsuperscript{#1}\footnote{#2}},
+%	reference handler = {\footnote{#1, #2}},
 %	id in index entries,
 }
 
