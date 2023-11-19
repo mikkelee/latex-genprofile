@@ -534,10 +534,12 @@
 
 \NewDocumentCommand { \gprRef } { s o m } {
 	\group_begin:
-		\property_if_recorded:enTF { gpr/#2/name } { full-name } {
-			\gpr_name_handler:e { \property_ref:ee { gpr/#2/name } { full-name } }
-		} {
-			\gpr_name_handler:n { #3 }
+		\IfBooleanF { #1 } {
+			\property_if_recorded:enTF { gpr/#2/name } { full-name } {
+				\gpr_name_handler:e { \property_ref:ee { gpr/#2/name } { full-name } }
+			} {
+				\gpr_name_handler:n { #3 }
+			}
 		}
 		\gpr_add_to_indexes:nN { #2 } \c_false_bool
 		\IfValueTF{#2}{
