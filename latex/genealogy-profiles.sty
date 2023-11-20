@@ -132,7 +132,7 @@
 }
 
 \tl_clear_new:N \l__gpr_fullname_raw_tl
-\property_new:nnnn { full-name } { now } { \c_novalue_tl } {
+\property_new:nnnn { raw-name } { now } { \c_novalue_tl } {
 	\tl_use:N \l__gpr_fullname_raw_tl
 }
 
@@ -469,7 +469,7 @@
 			\seq_gput_right:NV \g__gpr_used_profile_ids_seq \l__gpr_id_tl
 		}
 
-		\property_record:ee { gpr/\tl_use:N \l__gpr_id_tl/name } { full-name }
+		\property_record:ee { gpr/\tl_use:N \l__gpr_id_tl/name } { raw-name }
 
 		% init floruit years
 		\seq_clear_new:N \l__gpr_floruit_years_seq
@@ -538,8 +538,8 @@
 \NewDocumentCommand { \gprRef } { s o m } {
 	\group_begin:
 		\IfBooleanF { #1 } {
-			\property_if_recorded:enTF { gpr/#2/name } { full-name } {
-				\gpr_name_handler:e { \property_ref:ee { gpr/#2/name } { full-name } }
+			\property_if_recorded:enTF { gpr/#2/name } { raw-name } {
+				\gpr_name_handler:e { \property_ref:ee { gpr/#2/name } { raw-name } }
 			} {
 				\gpr_name_handler:n { #3 }
 			}
@@ -547,7 +547,7 @@
 		\gpr_add_to_indexes:nN { #2 } \c_false_bool
 		\IfValueTF{#2}{
 			\hyperlink{ \property_ref:nn { gpr/#2/target } { target } } {
-				#3
+				\tl_use:N \l__gpr_fullname_tl
 				\gpr__reference_style_handler:nn {#2} {
 					\gpr__page_number_handler:n {
 						\property_ref:nnn { gpr/#2/target } { page } {
@@ -560,7 +560,7 @@
 %			\msg_note:nneee { genealogy-profiles } { reference-recorded } { \tl_use:N \l__gpr_id_tl } { #2 } {\the\inputlineno}
 			\gpr_save_reference:Vn \l__gpr_id_tl { #2 }
 		}{
-			\msg_warning:nnee { genealogy-profiles } { unlabeled-reference } { #3 } {\the\inputlineno}
+			\msg_warning:nnee { genealogy-profiles } { unlabeled-reference } { \tl_use:N \l__gpr_fullname_tl } {\the\inputlineno}
 			{ \color_select:n {red} #3 }
 		}
 	\group_end:
