@@ -13,6 +13,9 @@
 
 \keys_define:nn { genealogy-profiles }
 {
+	name~part~order				.code:n			= {
+			\seq_gset_from_clist:Nn \g__gpr_name_part_order_seq {#1}
+		} ,
 	name~type					.choices:nn		= {
 			given~and~surname ,
 			nordic~historical ,
