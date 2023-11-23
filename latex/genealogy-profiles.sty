@@ -41,6 +41,7 @@
 	end~profile					.tl_set:N		= \l__gpr_end_profile_tl ,
 
 	reference~style				.cs_set:Np		= \gpr__reference_style_handler:nn #1#2 ,
+	unknown~reference~style		.cs_set:Np		= \gpr__unknown_reference_handler:nn #1#2 ,
 	page~number~style			.cs_set:Np		= \gpr__page_number_handler:n #1 ,
 
 	% name part styling
@@ -86,6 +87,11 @@
 	header~format = { \gprStyledName \hfill \gprID } ,
 	reference~style = { \gpr_super_subscript:nn {#1} {#2} } ,
 	page~number~style = { p.\nobreakspace#1 } ,
+	unknown~reference~style = {\color_select:n {red} #1 \tl_if_novalue:nF {#2} {~ (#2)}} ,
+}
+
+\cs_generate_variant:Nn \gpr__unknown_reference_handler:nn {
+	Vn, nV
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -459,7 +465,8 @@
 		\gpr__reference_style_handler:nn {#1} {
 			\gpr__page_number_handler:n {
 				\property_ref:nnn { gpr/#1/target } { page } {
-					{ \color_select:n {red} \bfseries ?? }
+					%% TODO if no page
+					\gpr__unknown_reference_handler:nV { \bfseries ?? } \c_novalue_tl
 				}
 			}
 			\property_ref_undefined_warn:n { gpr/#1/target }
@@ -627,7 +634,7 @@
 				\tl_if_eq:NnTF \l_tmpa_tl {_AMBIGUOUS_}
 				{
 					\msg_warning:nnee { genealogy-profiles } { ambiguous-reference } { \tl_use:N \l__gpr_fullname_tl } {\the\inputlineno}
-					{ \color_select:n {red} \tl_use:N \l__gpr_fullname_tl (ambiguous!) }
+					\gpr__unknown_reference_handler:Vn \l__gpr_fullname_tl { ambiguous }
 				}
 				{
 					\gpr_typeset_reference:VVnN \l_tmpa_tl \l__gpr_fullname_tl {#4} #1
@@ -635,7 +642,7 @@
 			}
 			{
 				\msg_warning:nne { genealogy-profiles } { unknown-reference-name } { #3 }
-				{ \color_select:n {red} \tl_use:N \l__gpr_fullname_tl }
+					\gpr__unknown_reference_handler:Vn \l__gpr_fullname_tl { unknown~name }
 			}
 		}
 	\group_end:
