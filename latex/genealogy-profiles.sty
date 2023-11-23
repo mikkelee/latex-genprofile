@@ -40,8 +40,8 @@
 	after~life~events			.tl_set:N		= \l__gpr_after_life_events_tl ,
 	end~profile					.tl_set:N		= \l__gpr_end_profile_tl ,
 
-	reference~handler			.cs_set:Np		= \gpr__reference_style_handler:nn #1#2 ,
-	page~number~handler			.cs_set:Np		= \gpr__page_number_handler:n #1 ,
+	reference~style				.cs_set:Np		= \gpr__reference_style_handler:nn #1#2 ,
+	page~number~style			.cs_set:Np		= \gpr__page_number_handler:n #1 ,
 
 	% name part styling
 	givenname~style				.tl_set:N		= \l__gpr_givenname_style_tl ,
@@ -84,8 +84,8 @@
 \keys_set:nn { genealogy-profiles } {
 	name~type = { given~and~surname } ,
 	header~format = { \gprStyledName \hfill \gprID } ,
-	reference~handler = { \gpr_super_subscript:nn {#1} {#2} } ,
-	page~number~handler = { p.\nobreakspace#1 } ,
+	reference~style = { \gpr_super_subscript:nn {#1} {#2} } ,
+	page~number~style = { p.\nobreakspace#1 } ,
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
