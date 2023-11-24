@@ -34,6 +34,8 @@
 			
 		} ,
 
+	auto~id~prefix				.tl_set:N		= \l__gpr_id_prefix_tl ,
+
 	% formatting profiles
 	begin~profile				.tl_set:N		= \l__gpr_begin_profile_tl ,
 	after~header				.tl_set:N		= \l__gpr_after_header_tl ,
@@ -192,6 +194,8 @@
 \cs_new_protected:Nn \gpr_generate_unique_id:
 {
 	\tl_clear_new:N \l_tmpa_tl
+
+	\tl_put_right:NV \l_tmpa_tl \l__gpr_id_prefix_tl
 
 	% build base id from initials
 	\seq_map_indexed_inline:Nn \g__gpr_name_part_order_seq {
@@ -460,12 +464,12 @@
 
 \cs_new_protected:Nn \gpr_typeset_reference:nnnN
 {
+	%% TODO if no target/page?
 	\hyperlink{ \property_ref:nn { gpr/#1/target } { target } } {
 		\tl_if_novalue:nTF { #3 } { #2 } { #3 }
 		\gpr__reference_style_handler:nn {#1} {
 			\gpr__page_number_handler:n {
 				\property_ref:nnn { gpr/#1/target } { page } {
-					%% TODO if no page
 					\gpr__unknown_reference_handler:nV { \bfseries ?? } \c_novalue_tl
 				}
 			}
