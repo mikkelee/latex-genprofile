@@ -236,7 +236,7 @@
 			}
 	}
 
-	% check if raw name as an associated id
+	% check if raw name has an associated id
 	\prop_get:NVNTF \g__gpr_name_to_id_prop \l__gpr_fullname_raw_tl \l_tmpb_tl
 	{
 		% mark raw name ambiguous if already reserved for other id
@@ -334,7 +334,7 @@
 	\index[#1]{
 		#2
 		\bool_if:nT { #3 && !\tl_if_blank_p:V \l__gpr_main_index_entry_style_tl }
-			{ | \tl_use:N \l__gpr_main_index_entry_style_tl}
+			{ | \tl_use:N \l__gpr_main_index_entry_style_tl }
 	}
 }
 \cs_generate_variant:Nn \gpr_add_to_named_index:nnN {
