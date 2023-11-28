@@ -40,9 +40,11 @@
 
 	% formatting profiles
 	begin~profile				.tl_set:N		= \l__gpr_begin_profile_tl ,
-	after~header				.tl_set:N		= \l__gpr_after_header_tl ,
-	after~life~events			.tl_set:N		= \l__gpr_after_life_events_tl ,
 	end~profile					.tl_set:N		= \l__gpr_end_profile_tl ,
+	begin~header				.tl_set:N		= \l__gpr_begin_header_tl ,
+	end~header					.tl_set:N		= \l__gpr_end_header_tl ,
+	begin~life~events			.tl_set:N		= \l__gpr_begin_life_events_tl ,
+	end~life~events				.tl_set:N		= \l__gpr_end_life_events_tl ,
 
 	reference~style				.cs_set:Np		= \gpr__reference_style_handler:nn #1#2 ,
 	unknown~reference~style		.cs_set:Np		= \gpr__unknown_reference_handler:nn #1#2 ,
@@ -612,16 +614,19 @@
 		\gpr_add_to_indexes:VN \l__gpr_id_tl \c_true_bool
 
 		\bool_if:NT \l__gpr_autoheader_bool {
+			\tl_use:N \l__gpr_begin_header_tl
 			\tl_use:N \l__gpr_header_format_tl
-			\tl_use:N \l__gpr_after_header_tl
+			\tl_use:N \l__gpr_end_header_tl
 		}
 
 		% typeset life events
 		\tl_if_empty:NF \l__gpr_life_events_tl {
+			\tl_use:N \l__gpr_begin_life_events_tl
+
 			\gpr_set_genealogytree_keys:V \l__gpr_life_events_tl
 			\gtrPrintDatabase
 
-			\tl_use:N \l__gpr_after_life_events_tl
+			\tl_use:N \l__gpr_end_life_events_tl
 		}
 }{
 		% end typesetting
