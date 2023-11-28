@@ -69,6 +69,10 @@
 	nest~index~entries			.bool_set:N 	= \l__gpr_nest_index_entries_bool ,
 	id~in~index~entries			.bool_set:N 	= \l__gpr_id_in_index_entries_bool ,
 	main~index~entry~style		.tl_set:N		= \l__gpr_main_index_entry_style_tl ,
+	include~unknown~in~index	.bool_set:N 	= \l__gpr_include_unknown_in_index_bool ,
+	include~unknown~in~index	.default:n	 	= { true } ,
+	include~ambiguous~in~index	.bool_set:N 	= \l__gpr_include_ambiguous_in_index_bool ,
+	include~ambiguous~in~index	.default:n	 	= { true } ,
 }
 
 \keys_define:nn { genealogy-profiles / profile }
@@ -90,6 +94,8 @@
 % set some defaults
 \keys_set:nn { genealogy-profiles } {
 	auto~id ,
+	include~unknown~in~index ,
+	include~ambiguous~in~index ,
 	name~type = { given~and~surname } ,
 	header~format = { \gprStyledName \hfill \gprID } ,
 	reference~style = { \gpr_super_subscript:nn {#1} {#2} } ,
@@ -657,7 +663,9 @@
 				{
 					\msg_warning:nnee { genealogy-profiles } { ambiguous-reference } { \tl_use:N \l__gpr_fullname_tl } {\the\inputlineno}
 					\gpr__unknown_reference_handler:Vn \l__gpr_styled_name_tl { ambiguous }
-					\gpr_add_to_indexes:nN { ambiguous } \c_false_bool
+					\bool_if:NT \l__gpr_include_ambiguous_in_index_bool {
+						\gpr_add_to_indexes:nN { ambiguous } \c_false_bool
+					}
 				}
 				{
 					\gpr_typeset_reference:VVnN \l_tmpa_tl \l__gpr_styled_name_tl {#4} #1
@@ -666,7 +674,9 @@
 			{
 				\msg_warning:nne { genealogy-profiles } { unknown-reference-name } { #3 }
 					\gpr__unknown_reference_handler:Vn \l__gpr_styled_name_tl { unknown~name }
+				\bool_if:NT \l__gpr_include_unknown_in_index_bool {
 					\gpr_add_to_indexes:nN {unknown} \c_false_bool
+				}
 			}
 		}
 	\group_end:
