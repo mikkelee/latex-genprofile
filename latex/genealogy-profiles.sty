@@ -675,3 +675,13 @@
 	}
 	#1
 }
+
+\NewDocumentCommand { \gprSpouse } { s o m o } {
+	\gtrsymMarried{} ~
+	\IfValueT{#4} { #4 ~ }
+	\IfBooleanTF {#1} {
+		\gprRef*[#2]{#3}
+	} {
+		\gprRef[#2]{#3}
+	}
+}
