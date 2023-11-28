@@ -648,22 +648,22 @@
 	\group_begin:
 		\gpr_name_handler:n { #3 }
 		\IfValueTF{#2}{
-			\gpr_typeset_reference:nVnN {#2} \l__gpr_fullname_tl {#4} #1
+			\gpr_typeset_reference:nVnN {#2} \l__gpr_styled_name_tl {#4} #1
 		}{
 			\prop_get:NnNTF \g__gpr_name_to_id_prop {#3} \l_tmpa_tl
 			{
 				\tl_if_eq:NnTF \l_tmpa_tl {_AMBIGUOUS_}
 				{
 					\msg_warning:nnee { genealogy-profiles } { ambiguous-reference } { \tl_use:N \l__gpr_fullname_tl } {\the\inputlineno}
-					\gpr__unknown_reference_handler:Vn \l__gpr_fullname_tl { ambiguous }
+					\gpr__unknown_reference_handler:Vn \l__gpr_styled_name_tl { ambiguous }
 				}
 				{
-					\gpr_typeset_reference:VVnN \l_tmpa_tl \l__gpr_fullname_tl {#4} #1
+					\gpr_typeset_reference:VVnN \l_tmpa_tl \l__gpr_styled_name_tl {#4} #1
 				}
 			}
 			{
 				\msg_warning:nne { genealogy-profiles } { unknown-reference-name } { #3 }
-					\gpr__unknown_reference_handler:Vn \l__gpr_fullname_tl { unknown~name }
+					\gpr__unknown_reference_handler:Vn \l__gpr_styled_name_tl { unknown~name }
 			}
 		}
 	\group_end:
