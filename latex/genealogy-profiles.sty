@@ -346,7 +346,7 @@
 	VVN, VeN
 }
 
-\cs_new:Nn \gpr_build_index_entry:Nnn {
+\cs_new:Nn \gpr_build_index_entry:Nnnn {
 	\seq_clear:N \l_tmpa_seq
 	\clist_map_inline:nn {#2} {
 		\tl_if_blank:vF { l__gpr_##1_tl } {
@@ -365,7 +365,7 @@
 		\seq_use:Nn \l_tmpa_seq {~}
 		\bool_if:NTF \l__gpr_nest_index_entries_bool { ! } { ,~ }
 		\seq_use:Nn \l_tmpb_seq {~}
-		\bool_if:NT \l__gpr_id_in_index_entries_bool { ~ (\tl_use:N \l__gpr_id_tl) }
+		\bool_if:NT \l__gpr_id_in_index_entries_bool { ~ (#4) }
 	}
 }
 
@@ -384,35 +384,37 @@
 			\l__gpr_fullname_index_tl
 			{
 				\tl_use:N \l__gpr_fullname_tl
-				\bool_if:NT \l__gpr_id_in_index_entries_bool
-					{ ~ (\tl_use:N \l__gpr_id_tl) }
+				\bool_if:NT \l__gpr_id_in_index_entries_bool { ~ (\tl_use:N #1) }
 			}
 			#2
 	}
 
 	\tl_if_blank:VF \l__gpr_patronymic_index_tl {
 		\tl_if_blank:VF \l__gpr_patronymic_tl {
-			\gpr_build_index_entry:Nnn \l_tmpa_tl
+			\gpr_build_index_entry:Nnnn \l_tmpa_tl
 				{ patronymic, surname, byname }
 				{ givenname }
+				{ #1 }
 		
 			\gpr_add_to_named_index:VVN \l__gpr_patronymic_index_tl \l_tmpa_tl #2
 		}
 	}
 	\tl_if_blank:VF \l__gpr_surname_index_tl {
 		\tl_if_blank:VF \l__gpr_surname_tl {
-			\gpr_build_index_entry:Nnn \l_tmpa_tl
+			\gpr_build_index_entry:Nnnn \l_tmpa_tl
 				{ surname, byname }
 				{ givenname, patronymic }
+				{ #1 }
 		
 			\gpr_add_to_named_index:VVN \l__gpr_surname_index_tl \l_tmpa_tl #2
 		}
 	}
 	\tl_if_blank:VF \l__gpr_byname_index_tl {
 		\tl_if_blank:VF \l__gpr_byname_tl {
-			\gpr_build_index_entry:Nnn \l_tmpa_tl
+			\gpr_build_index_entry:Nnnn \l_tmpa_tl
 				{ byname }
 				{ givenname, patronymic, surname }
+				{ #1 }
 		
 			\gpr_add_to_named_index:VVN \l__gpr_byname_index_tl \l_tmpa_tl #2
 		}
@@ -655,6 +657,7 @@
 				{
 					\msg_warning:nnee { genealogy-profiles } { ambiguous-reference } { \tl_use:N \l__gpr_fullname_tl } {\the\inputlineno}
 					\gpr__unknown_reference_handler:Vn \l__gpr_styled_name_tl { ambiguous }
+					\gpr_add_to_indexes:nN { ambiguous } \c_false_bool
 				}
 				{
 					\gpr_typeset_reference:VVnN \l_tmpa_tl \l__gpr_styled_name_tl {#4} #1
@@ -663,6 +666,7 @@
 			{
 				\msg_warning:nne { genealogy-profiles } { unknown-reference-name } { #3 }
 					\gpr__unknown_reference_handler:Vn \l__gpr_styled_name_tl { unknown~name }
+					\gpr_add_to_indexes:nN {unknown} \c_false_bool
 			}
 		}
 	\group_end:
