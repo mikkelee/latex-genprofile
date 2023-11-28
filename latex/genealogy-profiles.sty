@@ -371,53 +371,52 @@
 
 \cs_new:Nn \gpr_add_to_indexes:nN
 {
-	\group_begin:
-		\tl_if_blank:VF \l__gpr_id_index_tl {
-			\tl_if_novalue:nF {#1} {
-				\gpr_add_to_named_index:VeN \l__gpr_id_index_tl
-					{ #1 ~ \tl_use:N \l__gpr_fullname_tl }
-					#2
-			}
-		}
-
-		\tl_if_blank:VF \l__gpr_fullname_index_tl {
-			\gpr_add_to_named_index:VVN
-				\l__gpr_fullname_index_tl
-				{
-					\tl_use:N \l__gpr_fullname_tl
-					\bool_if:NT \l__gpr_id_in_index_entries_bool { ~ (\tl_use:N \l__gpr_id_tl) }
-				}
+	\tl_if_blank:VF \l__gpr_id_index_tl {
+		\tl_if_novalue:nF {#1} {
+			\gpr_add_to_named_index:VeN \l__gpr_id_index_tl
+				{ #1 ~ \tl_use:N \l__gpr_fullname_tl }
 				#2
 		}
+	}
 
-		\tl_if_blank:VF \l__gpr_patronymic_index_tl {
-			\tl_if_blank:VF \l__gpr_patronymic_tl {
-				\gpr_build_index_entry:Nnn \l_tmpa_tl
-					{ patronymic, surname, byname }
-					{ givenname }
-			
-				\gpr_add_to_named_index:VVN \l__gpr_patronymic_index_tl \l_tmpa_tl #2
+	\tl_if_blank:VF \l__gpr_fullname_index_tl {
+		\gpr_add_to_named_index:VVN
+			\l__gpr_fullname_index_tl
+			{
+				\tl_use:N \l__gpr_fullname_tl
+				\bool_if:NT \l__gpr_id_in_index_entries_bool
+					{ ~ (\tl_use:N \l__gpr_id_tl) }
 			}
+			#2
+	}
+
+	\tl_if_blank:VF \l__gpr_patronymic_index_tl {
+		\tl_if_blank:VF \l__gpr_patronymic_tl {
+			\gpr_build_index_entry:Nnn \l_tmpa_tl
+				{ patronymic, surname, byname }
+				{ givenname }
+		
+			\gpr_add_to_named_index:VVN \l__gpr_patronymic_index_tl \l_tmpa_tl #2
 		}
-		\tl_if_blank:VF \l__gpr_surname_index_tl {
-			\tl_if_blank:VF \l__gpr_surname_tl {
-				\gpr_build_index_entry:Nnn \l_tmpa_tl
-					{ surname, byname }
-					{ givenname, patronymic }
-			
-				\gpr_add_to_named_index:VVN \l__gpr_surname_index_tl \l_tmpa_tl #2
-			}
+	}
+	\tl_if_blank:VF \l__gpr_surname_index_tl {
+		\tl_if_blank:VF \l__gpr_surname_tl {
+			\gpr_build_index_entry:Nnn \l_tmpa_tl
+				{ surname, byname }
+				{ givenname, patronymic }
+		
+			\gpr_add_to_named_index:VVN \l__gpr_surname_index_tl \l_tmpa_tl #2
 		}
-		\tl_if_blank:VF \l__gpr_byname_index_tl {
-			\tl_if_blank:VF \l__gpr_byname_tl {
-				\gpr_build_index_entry:Nnn \l_tmpa_tl
-					{ byname }
-					{ givenname, patronymic, surname }
-			
-				\gpr_add_to_named_index:VVN \l__gpr_byname_index_tl \l_tmpa_tl #2
-			}
+	}
+	\tl_if_blank:VF \l__gpr_byname_index_tl {
+		\tl_if_blank:VF \l__gpr_byname_tl {
+			\gpr_build_index_entry:Nnn \l_tmpa_tl
+				{ byname }
+				{ givenname, patronymic, surname }
+		
+			\gpr_add_to_named_index:VVN \l__gpr_byname_index_tl \l_tmpa_tl #2
 		}
-	\group_end:
+	}
 }
 \cs_generate_variant:Nn \gpr_add_to_indexes:nN {
 	VN
