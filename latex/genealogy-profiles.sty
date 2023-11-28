@@ -187,6 +187,9 @@
 			\tl_set:cV { l__gpr_##2_tl } \l_tmpa_tl
 		}
 	}
+
+	\tl_clear_new:N \l__gpr_styled_name_tl
+	\gpr_style_name:N \l__gpr_styled_name_tl
 }
 \cs_generate_variant:Nn \gpr_name_handler:n {
 	V, e
@@ -587,10 +590,6 @@
 			\gpr_format_floruit:N \l__formatted_gpr_floruit_tl
 			\tl_put_right:Ne \l__gpr_life_events_tl {,\tl_use:N \l__formatted_gpr_floruit_tl }
 		}
-
-		% format name
-		\tl_clear_new:N \l__gpr_styled_name_tl
-		\gpr_style_name:N \l__gpr_styled_name_tl
 
 		% placeholders for id and names
 		\cs_set:Npe \gprID { \tl_use:N \l__gpr_id_tl }
