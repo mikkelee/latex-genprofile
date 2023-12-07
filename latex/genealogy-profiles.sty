@@ -683,11 +683,14 @@
 }
 
 \NewDocumentCommand { \gprYear } { m } {
+	% expand argument before using
+	\tl_set:Ne \l_tmpa_tl {#1}
+	\tl_use:N \l_tmpa_tl
+
 	% record floruit year
-	\seq_if_in:NnF \l__gpr_floruit_years_seq {#1} {
-		\seq_gput_right:Nn \l__gpr_floruit_years_seq {#1}
+	\seq_if_in:NVF \l__gpr_floruit_years_seq \l_tmpa_tl {
+		\seq_gput_right:NV \l__gpr_floruit_years_seq \l_tmpa_tl
 	}
-	#1
 }
 
 \NewDocumentCommand { \gprSpouse } { s o m o } {
