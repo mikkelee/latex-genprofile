@@ -682,6 +682,16 @@
 	\group_end:
 }
 
+\NewDocumentCommand { \gprName } { s m o } {
+	\group_begin:
+		\gpr_name_handler:n { #2 }
+		\tl_use:N \l__gpr_styled_name_tl
+		\bool_if:NT \l__gpr_include_unknown_in_index_bool {
+			\gpr_add_to_indexes:nN \c_novalue_tl \c_false_bool
+		}
+	\group_end:
+}
+
 \NewDocumentCommand { \gprYear } { m } {
 	% expand argument before using
 	\tl_set:Ne \l_tmpa_tl {#1}
