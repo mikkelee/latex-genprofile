@@ -85,6 +85,8 @@
 	byname						.tl_set:N		= \l__gpr_byname_tl ,
 
 	life~events					.tl_set:N		= \l__gpr_life_events_tl ,
+
+	no~index		 			.bool_set:N 	= \l__gpr_no_index_bool ,
 }
 
 \NewDocumentCommand { \gprKeys } { +m } {
@@ -617,7 +619,10 @@
 		% record properties for id
 		\property_record:ee { gpr/\tl_use:N \l__gpr_id_tl/target } { page, target }
 
-		\gpr_add_to_indexes:VN \l__gpr_id_tl \c_true_bool
+		% add to indexes unless key set
+		\bool_if:NF \l__gpr_no_index_bool {
+			\gpr_add_to_indexes:VN \l__gpr_id_tl \c_true_bool
+		}
 
 		\bool_if:NT \l__gpr_autoheader_bool {
 			\tl_use:N \l__gpr_begin_header_tl
