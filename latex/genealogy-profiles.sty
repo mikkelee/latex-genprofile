@@ -504,17 +504,23 @@
 
 \cs_new_protected:Nn \gpr_typeset_reference:nnnN
 {
-	%% TODO if no target/page?
-	\hyperlink{ \property_ref:nn { gpr/#1/target } { target } } {
-		\tl_if_novalue:nTF { #3 } { #2 } { #3 }
-		\gpr__reference_style_handler:nn {#1} {
-			\gpr__page_number_handler:n {
-				\property_ref:nnn { gpr/#1/target } { page } {
-					\gpr__unknown_reference_handler:nV { \bfseries ?? } \c_novalue_tl
+	\property_if_recorded:eTF { gpr/#1/target }
+	{
+		\hyperlink{ \property_ref:nn { gpr/#1/target } { target } } {
+			\tl_if_empty:nTF { #3 } { #2 } { #3 }
+			\gpr__reference_style_handler:nn {#1} {
+				\gpr__page_number_handler:n {
+					\property_ref:nnn { gpr/#1/target } { page } {
+						\gpr__unknown_reference_handler:nV { \bfseries ?? } \c_novalue_tl
+					}
 				}
+				\property_ref_undefined_warn:n { gpr/#1/target }
 			}
-			\property_ref_undefined_warn:n { gpr/#1/target }
 		}
+	}
+	{
+		\msg_warning:nne { genealogy-profiles } { unknown-reference-id } { #1 }
+		\gpr__unknown_reference_handler:nn {#2} { unknown~id: ~ #1 }
 	}
 	\bool_if:NT { #4 } {
 		\gpr_add_to_indexes:nN { #1 } \c_false_bool
