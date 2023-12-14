@@ -590,6 +590,8 @@
 			}
 			\tl_set:Ne \l__gpr_fullname_tl { \seq_use:Nn \l_tmpa_seq {~} }
 			\tl_set_eq:NN \l__gpr_fullname_raw_tl \l__gpr_fullname_tl
+			\tl_clear_new:N \l__gpr_styled_name_tl
+			\gpr_style_name:N \l__gpr_styled_name_tl
 		} {
 			% otherwise use full name to split into parts
 			\tl_set_eq:NN \l__gpr_fullname_raw_tl \l__gpr_fullname_tl
