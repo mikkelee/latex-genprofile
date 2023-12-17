@@ -73,6 +73,8 @@
 	include~unknown~in~index	.default:n	 	= { true } ,
 	include~ambiguous~in~index	.bool_set:N 	= \l__gpr_include_ambiguous_in_index_bool ,
 	include~ambiguous~in~index	.default:n	 	= { true } ,
+
+	debug~log					.bool_set:N 	= \l__gpr_debug_log_bool
 }
 
 \keys_define:nn { genealogy-profiles / profile }
@@ -577,6 +579,10 @@
 % 
 
 \NewDocumentEnvironment { gprProfile* } { m O{} } {
+	\bool_if:NT \l__gpr_debug_log_bool {
+		\tl_log:e {\the\inputlineno}
+		\tl_log:n {BEGIN ~ #1}
+	}
 	\group_begin:
 		\keys_set:nn { genealogy-profiles / profile } { #1, life~events={#2} }
 
@@ -681,6 +687,10 @@
 			\property_record:ee { gpr/\tl_use:N \l__gpr_id_tl/floruit } { floruit-years }
 		}
 	\group_end:
+	\bool_if:NT \l__gpr_debug_log_bool {
+		\tl_log:e {\the\inputlineno}
+		\tl_log:n {END ~ #1}
+	}
 }
 
 \NewDocumentEnvironment { gprProfile } { O{} m O{} } {
