@@ -764,9 +764,9 @@
 \cs_generate_variant:Nn \gpr_cmd_year:n {
 	e
 }
-\NewDocumentCommand { \gprYear } { m } {
-	\gpr_cmd_year:e {#1}
-	#1
+\NewDocumentCommand { \gprYear } { s m } {
+	\gpr_cmd_year:e {#2}
+	\bool_if:NF { #1 } { #2 }
 }
 
 
@@ -794,9 +794,9 @@
 \cs_generate_variant:Nn \gpr_cmd_years:n {
 	e
 }
-\NewDocumentCommand { \gprYears } { m } {
-	\gpr_cmd_years:e {#1}
-	#1
+\NewDocumentCommand { \gprYears } { s m } {
+	\gpr_cmd_years:e {#2}
+	\bool_if:NF { #1 } { #2 }
 }
 
 
