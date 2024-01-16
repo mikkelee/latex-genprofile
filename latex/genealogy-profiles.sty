@@ -57,7 +57,7 @@
 	byname~style				.tl_set:N		= \l__gpr_byname_style_tl ,
 
 	header~format				.tl_set:N		= \l__gpr_header_format_tl ,
-	autoheader		 			.bool_set:N 	= \l__gpr_autoheader_bool ,
+	auto~header		 			.bool_set:N 	= \l__gpr_auto_header_bool ,
 
 	% indexes
 	id~index					.tl_set:N		= \l__gpr_id_index_tl ,
@@ -663,7 +663,7 @@
 			\gpr_add_to_indexes:VN \l__gpr_id_tl \c_true_bool
 		}
 
-		\bool_if:NT \l__gpr_autoheader_bool {
+		\bool_if:NT \l__gpr_auto_header_bool {
 			\tl_use:N \l__gpr_begin_header_tl
 			\tl_use:N \l__gpr_header_format_tl
 			\tl_use:N \l__gpr_end_header_tl
