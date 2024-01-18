@@ -758,13 +758,15 @@
 }
 
 
-\NewDocumentCommand { \gprName } { s m o } {
+\NewDocumentCommand { \gprName } { s m } {
 	\group_begin:
 		\gpr_name_handler:n { #2 }
 		\tl_use:N \l__gpr_styled_name_tl
-		\bool_if:NT \l__gpr_include_unknown_in_index_bool {
-			\gpr_add_to_indexes:nN \c_novalue_tl \c_false_bool
-		}
+		\bool_if:nT { !#1 && \l__gpr_include_unknown_in_index_bool }
+			{
+				\bool_set_false:N \l__gpr_id_in_index_entries_bool
+				\gpr_add_to_indexes:nN \c_novalue_tl \c_false_bool
+			}
 	\group_end:
 }
 
