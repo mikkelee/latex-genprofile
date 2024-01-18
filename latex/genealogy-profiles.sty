@@ -506,10 +506,16 @@
 
 \cs_new_protected:Nn \gpr_typeset_reference:nnnN
 {
-	\property_if_recorded:eTF { gpr/#1/target }
+	\property_if_recorded:nTF { gpr/#1/target }
 	{
 		\hyperlink{ \property_ref:nn { gpr/#1/target } { target } } {
-			\tl_if_empty:nTF { #3 } { #2 } { #3 }
+			\tl_if_blank:nTF { #3 } { #2 } {
+				% render styled #3 if present
+				\group_begin:
+				 	\gpr_name_handler:n {#3}
+				 	\tl_use:N \l__gpr_styled_name_tl
+				 \group_end:
+			}
 			\gpr__reference_style_handler:nn {#1} {
 				\gpr__page_number_handler:n {
 					\property_ref:nnn { gpr/#1/target } { page } {
