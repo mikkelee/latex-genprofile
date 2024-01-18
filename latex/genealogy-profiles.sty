@@ -46,7 +46,7 @@
 	begin~life~events			.tl_set:N		= \l__gpr_begin_life_events_tl ,
 	end~life~events				.tl_set:N		= \l__gpr_end_life_events_tl ,
 
-	reference~style				.cs_set:Np		= \gpr__reference_style_handler:nn #1#2 ,
+	reference~style				.cs_set:Np		= \gpr__reference_style_handler:nnn #1#2#3 ,
 	unknown~reference~style		.cs_set:Np		= \gpr__unknown_reference_handler:nn #1#2 ,
 	page~number~style			.cs_set:Np		= \gpr__page_number_handler:n #1 ,
 
@@ -103,8 +103,8 @@
 	name~type = { given~and~surname } ,
 	header~format = { \gprStyledName \hfill \gprID } ,
 	reference~style = {
-		\gpr_super_subscript:nn {#1} {#2}
-		 } ,
+			#1 \gpr_super_subscript:nn {#2} {#3}
+		} ,
 	page~number~style = {
 			p.\nobreakspace#1
 		} ,
@@ -523,14 +523,17 @@
 	\property_if_recorded:nTF { gpr/#1/target }
 	{
 		\hyperlink{ \property_ref:nn { gpr/#1/target } { target } } {
-			\tl_if_blank:nTF { #3 } { #2 } {
-				% render styled #3 if present
-				\group_begin:
-				 	\gpr_name_handler:n {#3}
-				 	\tl_use:N \l__gpr_styled_name_tl
-				 \group_end:
-			}
-			\gpr__reference_style_handler:nn {#1} {
+			\gpr__reference_style_handler:nnn {
+				\tl_if_blank:nTF { #3 } { #2 } {
+					% render styled #3 if present
+					\group_begin:
+						\gpr_name_handler:n {#3}
+						\tl_use:N \l__gpr_styled_name_tl
+					 \group_end:
+				}
+			} {
+				#1
+			} {
 				\gpr__page_number_handler:n {
 					\property_ref:nnn { gpr/#1/target } { page } {
 						\gpr__unknown_reference_handler:nV { \bfseries ?? } \c_novalue_tl
