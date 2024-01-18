@@ -699,12 +699,13 @@
 	\end{gprProfile*}
 }
 
-\cs_new_protected:Nn \gpr_cmd_ref:Nnnn
+\cs_new_protected:Nn \gpr_cmd_ref:Nnn
 {
 	\group_begin:
-		\gpr_name_handler:n { #3 }
 		\tl_if_empty:nTF {#2} 
 		{
+			% no id provided, so we use the name to try looking it up
+			\gpr_name_handler:n { #3 }
 			\prop_get:NnNTF \g__gpr_name_to_id_prop {#3} \l_tmpa_tl
 			{
 				\str_if_eq:VnTF \l_tmpa_tl {_AMBIGUOUS_}
@@ -718,7 +719,7 @@
 					}
 				}
 				{
-					\gpr_typeset_reference:VVnN \l_tmpa_tl \l__gpr_styled_name_tl {#4} #1
+					\gpr_typeset_reference:VVnN \l_tmpa_tl \l__gpr_styled_name_tl {} #1
 				}
 			}
 			{
@@ -731,15 +732,23 @@
 			}
 		}
 		{
-			\gpr_typeset_reference:nVnN {#2} \l__gpr_styled_name_tl {#4} #1
+			% id provided, find the name to use for indexes
+			\property_if_recorded:nTF { gpr/#2/name } {
+				\gpr_name_handler:e {
+					\property_ref:nn { gpr/#2/name } { raw-name }
+				}
+			} {
+				\gpr_name_handler:n {#3}
+			}
+			\gpr_typeset_reference:nVnN {#2} \l__gpr_styled_name_tl {#3} #1
 		}
 	\group_end:
 }
-\cs_generate_variant:Nn \gpr_cmd_ref:Nnnn {
-	Neee
+\cs_generate_variant:Nn \gpr_cmd_ref:Nnn {
+	Nee
 }
-\NewDocumentCommand { \gprRef } { s O{} m O{} } {
-	\gpr_cmd_ref:Neee #1 {#2} {#3} {#4}
+\NewDocumentCommand { \gprRef } { s O{} m } {
+	\gpr_cmd_ref:Nee #1 {#2} {#3}
 }
 
 
