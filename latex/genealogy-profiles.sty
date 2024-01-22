@@ -34,8 +34,8 @@
 			
 		} ,
 
-	auto~id			 			.bool_set:N 	= \l__gpr_autoid_bool ,
-	auto~id			 			.default:n	 	= { true } ,
+	auto~id						.bool_set:N 	= \l__gpr_autoid_bool ,
+	auto~id						.default:n		= { true } ,
 	auto~id~prefix				.tl_set:N		= \l__gpr_id_prefix_tl ,
 
 	% formatting profiles
@@ -57,7 +57,7 @@
 	byname~style				.tl_set:N		= \l__gpr_byname_style_tl ,
 
 	header~format				.tl_set:N		= \l__gpr_header_format_tl ,
-	auto~header		 			.bool_set:N 	= \l__gpr_auto_header_bool ,
+	auto~header					.bool_set:N 	= \l__gpr_auto_header_bool ,
 
 	% indexes
 	id~index					.tl_set:N		= \l__gpr_id_index_tl ,
@@ -70,9 +70,9 @@
 	id~in~index~entries			.bool_set:N 	= \l__gpr_id_in_index_entries_bool ,
 	main~index~entry~style		.tl_set:N		= \l__gpr_main_index_entry_style_tl ,
 	include~unknown~in~index	.bool_set:N 	= \l__gpr_include_unknown_in_index_bool ,
-	include~unknown~in~index	.default:n	 	= { true } ,
+	include~unknown~in~index	.default:n		= { true } ,
 	include~ambiguous~in~index	.bool_set:N 	= \l__gpr_include_ambiguous_in_index_bool ,
-	include~ambiguous~in~index	.default:n	 	= { true } ,
+	include~ambiguous~in~index	.default:n		= { true } ,
 
 	debug~log					.bool_set:N 	= \l__gpr_debug_log_bool
 }
@@ -88,7 +88,7 @@
 
 	life~events					.tl_set:N		= \l__gpr_life_events_tl ,
 
-	no~index		 			.bool_set:N 	= \l__gpr_no_index_bool ,
+	no~index					.bool_set:N 	= \l__gpr_no_index_bool ,
 }
 
 \NewDocumentCommand { \gprKeys } { +m } {
@@ -535,7 +535,7 @@
 					\group_begin:
 						\gpr_name_handler:n {#3}
 						\tl_use:N \l__gpr_styled_name_tl
-					 \group_end:
+					\group_end:
 				}
 			} {
 				#1
