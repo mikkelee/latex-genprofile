@@ -202,7 +202,8 @@
 	\tl_use:N \l__gpr_fullname_raw_tl
 }
 
-\prop_clear_new:N \g__gpr_name_to_id_prop
+\prop_clear_new:N \g__gpr_name_to_id_prop % saved at end, loaded into _active at start
+\prop_clear_new:N \g__gpr_name_to_id_active_prop % used for lookups during run
 \property_new:nnnn { names-ids } { now } { \c_novalue_tl } {
 	\prop_to_keyval:N \g__gpr_name_to_id_prop
 }
@@ -239,6 +240,28 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % IDs
 % 
+
+\cs_new_protected:Nn \gpr_map_name_to_id:Nnn
+{
+	% check if name already has an associated id
+	\prop_get:NVNTF #1 \l__gpr_fullname_raw_tl \l_tmpb_tl
+	{
+		% mark name ambiguous if already reserved
+		\tl_if_eq:NNF \l__gpr_id_tl \l_tmpb_tl
+		{
+			\msg_note:nne { genealogy-profiles } { ambiguous-rawname }
+				{ \tl_use:N \l__gpr_fullname_raw_tl }
+			\prop_gput:NVn #1 \l__gpr_fullname_raw_tl {_AMBIGUOUS_}
+		}
+	}
+	{
+		% otherwise save raw name -> id
+		\prop_gput:NVV #1 \l__gpr_fullname_raw_tl \l__gpr_id_tl
+	}
+}
+\cs_generate_variant:Nn \gpr_map_name_to_id:Nnn {
+	NVV
+}
 
 \seq_clear_new:N \g__gpr_used_profile_ids_seq
 
@@ -277,23 +300,6 @@
 
 				\bool_set_true:N \l__gpr_id_found_bool
 			}
-	}
-
-	% check if raw name has an associated id
-	\prop_get:NVNTF \g__gpr_name_to_id_prop \l__gpr_fullname_raw_tl \l_tmpb_tl
-	{
-		% mark raw name ambiguous if already reserved for other id
-		\tl_if_eq:NNF \l__gpr_id_tl \l_tmpb_tl
-		{
-			\msg_note:nne { genealogy-profiles } { ambiguous-rawname }
-				{ \tl_use:N \l__gpr_fullname_raw_tl }
-			\prop_gput:NVn \g__gpr_name_to_id_prop \l__gpr_fullname_raw_tl
-				{_AMBIGUOUS_}
-		}
-	}
-	{
-		% save raw name -> id
-		\prop_gput:NVV \g__gpr_name_to_id_prop \l__gpr_fullname_raw_tl \l__gpr_id_tl
 	}
 }
 
@@ -343,7 +349,7 @@
 \cs_new:Nn \gpr_init_names_to_keys:n
 {
 	\tl_if_novalue:nF {#1} {
-		\prop_set_from_keyval:Nn \g__gpr_name_to_id_prop {#1}
+		\prop_set_from_keyval:Nn \g__gpr_name_to_id_active_prop {#1}
 	}
 }
 \cs_generate_variant:Nn \gpr_init_names_to_keys:n {
@@ -639,6 +645,8 @@
 			}
 			\seq_gput_right:NV \g__gpr_used_profile_ids_seq \l__gpr_id_tl
 		}
+		\gpr_map_name_to_id:NVV \g__gpr_name_to_id_prop \l__gpr_fullname_raw_tl \l__gpr_id_tl
+		\gpr_map_name_to_id:NVV \g__gpr_name_to_id_active_prop \l__gpr_fullname_raw_tl \l__gpr_id_tl
 
 		% store raw name in aux
 		\property_record:ee { gpr/\tl_use:N \l__gpr_id_tl/name } { raw-name }
@@ -726,7 +734,7 @@
 		{
 			% no id provided, so we use the name to try looking it up
 			\gpr_name_handler:n { #3 }
-			\prop_get:NnNTF \g__gpr_name_to_id_prop {#3} \l_tmpa_tl
+			\prop_get:NnNTF \g__gpr_name_to_id_active_prop {#3} \l_tmpa_tl
 			{
 				\str_if_eq:VnTF \l_tmpa_tl {_AMBIGUOUS_}
 				{
