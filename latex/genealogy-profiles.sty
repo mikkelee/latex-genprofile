@@ -552,7 +552,7 @@
 		\gpr_warning:nn { unknown-reference-id } { #1 }
 		\gpr__unknown_reference_handler:nn {#2} { unknown~id: ~ #1 }
 	}
-	\bool_if:NT { #4 } {
+	\bool_if:NF #4 {
 		\gpr_add_to_indexes:nN { #1 } \c_false_bool
 	}
 	\gpr_save_reference:Vn \l__gpr_id_tl { #1 }
@@ -753,7 +753,7 @@
 				\gpr_warning:nn { unknown-reference-name } { #3 }
 				\gpr__unknown_reference_handler:Vn \l__gpr_styled_name_tl { unknown~name }
 				\bool_if:NT \l__gpr_include_unknown_in_index_bool {
-					\gpr_add_to_indexes:nN {unknown} \c_false_bool
+					\gpr_add_to_indexes:nN { unknown } \c_false_bool
 				}
 			}
 		}
@@ -785,7 +785,7 @@
 		\bool_if:nT { !#1 && \l__gpr_include_unknown_in_index_bool }
 			{
 				\bool_set_false:N \l__gpr_id_in_index_entries_bool
-				\gpr_add_to_indexes:nN \c_novalue_tl \c_false_bool
+				\gpr_add_to_indexes:nN { unknown } \c_false_bool
 			}
 	\group_end:
 }
