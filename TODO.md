@@ -3,6 +3,6 @@ TODO
 
 Ideas for future expansion
 
-	- a handler with regex -sen/-datter?
+	- more name types
 
-	- resetting name->id map??
+	- improved indexes for unknown/ambiguous/etc references

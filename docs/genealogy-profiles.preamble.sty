@@ -1,0 +1,87 @@
+\usepackage{imakeidx}
+\indexsetup{noclearpage}
+\makeindex
+
+\usepackage{needspace}
+
+\usepackage[english]{babel}
+%\usepackage[
+%	backend=biber,
+%	urldate=long,
+%	date=long,
+%]{biblatex}
+%\addbibresource{genealogy-profiles.bib}
+
+\usepackage{enumitem}
+\usepackage[
+%	hidelinks,
+]{hyperref}
+
+\usepackage{tcolorbox}
+\tcbuselibrary{documentation}
+\tcbuselibrary{minted}
+\tcbuselibrary{breakable}
+
+\definecolor{DarkDefinition}{rgb}{0.392,0.392,0.942}
+
+\tcbset{
+	listing engine=minted,
+	color definition=DarkDefinition,
+	floatplacement=h,
+	index colorize=true,
+	doc head={
+		interior style={
+			fill,
+			color=blue!10,
+		},
+		boxsep=2pt,
+		after skip=0pt,
+		nobeforeafter,
+	},
+	doc raster={
+		raster after skip=0pt,
+	},
+	before doc body={
+		\begin{tcolorbox}[
+			colback=blue!5,
+			colframe=blue!5,
+			arc=0pt,
+			outer arc=0pt,
+			before skip=0pt,
+			nobeforeafter,
+		]
+	},
+	after doc body={\end{tcolorbox}},
+	index format=off, % to get the profile index title to show up
+}
+
+\AtBeginEnvironment{tcb@manual@entry}{%
+	\needspace{4\baselineskip}%
+}
+
+\setlist[description]{
+	leftmargin=5em,
+	rightmargin=\leftmargin,
+	itemindent=\labelwidth,
+	align=right,
+	font=\docAuxKey,
+	noitemsep,
+}
+
+\usepackage{csquotes}
+
+\usepackage{fnpct}
+
+\usepackage{cleveref}
+
+\makeindex[name=gpr-surnames, title={Profile Index}]
+
+\usepackage{genealogy-profiles}
+
+\gprKeys{
+	patronymic index = gpr-surnames,
+	surname index = gpr-surnames,
+	byname index = gpr-surnames,
+}
+
+

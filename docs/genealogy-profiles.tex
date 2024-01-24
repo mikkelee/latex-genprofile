@@ -1,0 +1,601 @@
+% !TEX TS-program = LuaLaTeX-shell-escape
+\documentclass[
+	a4paper,
+]{article}
+
+\usepackage{genealogy-profiles.preamble}
+
+\title{Genealogical Profiles for \LaTeX}
+\author{Mikkel Eide Eriksen\\%
+	\href{mailto:mikkel.eriksen@gmail.com}{\texttt{mikkel.eriksen@gmail.com}}}
+
+\newcommand\brackval[1]{\brackets{\docValue{#1}}}
+
+\begin{document}
+
+\maketitle
+
+\section{Preface} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+This package enables the presenstation of individual \emph{profiles}, which may be useful for genealogical or local history treatises.
+
+Each profile is typeset using key/value-configurable environments, and a number of macros are provided to enable references and name formatting.
+
+Issues can be reported at\\\null\hfill\url{https://github.com/mikkelee/latex-genprofile/issues}
+
+\begin{figure}
+\begingroup
+\gprKeys{
+	name type = given and surname,
+	surname style = \scshape,
+	begin profile = {
+		\begin{tcolorbox}[title = \gprHeader]
+	},
+	begin life events = \small,
+	end life events = \tcblower,
+	end profile = \end{tcolorbox},
+}
+\begin{gprProfile}{Wolfgang_Amadeus Mozart}[
+	birth = {1756-01-27}{Getreidegasse 9, Salzburg},
+	death = {1791-12-05}{Vienna}
+]
+	Had a complex relationship with his rival \gprRef{Antonio Salieri}.
+\end{gprProfile}
+\begin{gprProfile}{Antonio Salieri}[
+	birth = {1750-08-18}{Legnago, Republic of Venice},
+	death = {1825-05-07}{Vienna}
+]
+	Was falsely accused of poisoning \gprRef[WM1]{_ Mozart}.
+\end{gprProfile}
+\endgroup
+\end{figure}
+
+\clearpage
+\section{Configuration} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The package is configured in the following manner:
+
+\begin{docCommand}
+	{usepackage}
+	{\brackets{genealogy-profiles}}
+
+	Loads the package and sets some sensible defaults as further described below.
+
+\end{docCommand}
+
+\begin{docCommand}
+	{gprKeys}
+	{\marg{general options}}
+
+	Can be used to set options globally (in the preamble) or locally (in a group). See \cref{sec:genconf} for possible keys/values.
+
+\end{docCommand}
+
+\section{Usage} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{docEnvironment}
+	{gprProfile}
+	{\oarg{profile options}\marg{name}\oarg{life events}}
+
+	Typesets its contents according to the configured layout (see \cref{sec:structure}). For possible profile options, see \cref{sec:profopts}.
+
+	The name will be parsed according to the current \refKey{name part order} (see \cref{sec:nameparsing} for discussion) and styled according to \refKey{givenname style} etc.
+
+	Each profile must have an ID, either supplied by the author via the \refKey{id} profile option key or automatically generated via the general \refKey{auto id} key.
+
+	The \refKey{life events} will be parsed as a database by the \href{https://ctan.org/pkg/genealogytree}{genealogytree} package.
+	
+\end{docEnvironment}
+
+\begin{docEnvironment}
+	{gprProfile*}
+	{\marg{profile options}\oarg{life events}}
+
+	The \refEnv*{gprProfile*} environment provides more control at the expense of convenience, by requiring the name part(s) be set explicitly as profile options. See \refKey{givenname} etc.
+	
+\end{docEnvironment}
+
+
+\begin{docCommands}[
+		doc name = {gprName}
+	]
+	{
+		{ doc parameter = {\marg{name}}},
+		{ doc parameter = {\sarg\marg{name}}},
+	}
+
+	Typesets a name, styled according to \refKey{givenname style} etc.
+
+	The regular version adds the name to any indices, the starred veresion does not.
+	
+\end{docCommands}
+
+
+\begin{docCommands}[
+		doc name = {gprRef}
+	]
+	{
+		{ doc parameter = {\oarg{id}\marg{name}}},
+		{ doc parameter = {\sarg\oarg{id}\marg{name}}},
+	}
+
+	Typesets a reference to a profile.
+
+	The ID is optional, in case they are not known or available at the time of writing. However, if the name is unique to the document, the reference should automatically be recognized.
+
+	If it is not possible for the package to identify the intended reference, either via ID or unique name, warnings will be emitted in the log as well as in the document (the latter can be configured via the \refKey{unknown reference style}).
+
+	When using an ID, the name parameter can be left empty, or alternately be used to override the displayed name, eg. to change case to genitive, etc.
+
+	The regular version adds the reference to configured indices, the starred version does not.
+
+	These commands require two runs to account for forward references.
+\end{docCommands}
+
+
+\begin{docCommands}[
+		doc name = {gprYear}
+	]
+	{
+		{ doc parameter = {\marg{year}}},
+		{ doc parameter = {\sarg\marg{year}}},
+	}
+
+	All tagged years in a profile will be gathered and inserted as a range into a \docValue*{floruit} life event, which will by default only be displayed if there is no defined lifespan (ie. birth or baptism \emph{and} death or burial).
+	
+	The starred version does not typeset anything, and can thus be used to add \enquote{hidden} years to the floruit event.
+
+	These commands require two runs.
+\end{docCommands}
+
+
+\begin{docCommands}[
+		doc name = {gprYears}
+	]
+	{
+		{ doc parameter = {\marg{year range}}},
+		{ doc parameter = {\sarg\marg{year range}}},
+	}
+
+	Adds two years to the \docValue*{floruit} event, by splitting at one or more hyphens.
+
+	Values such as \docValue*{1750--1755} or \docValue*{1750--55} will both be parsed as the two years \docValue*{1750} and \docValue*{1755} and typesets as the expected 1750--1755 or 1750--55, respectively.
+
+	Like \refCom{gprYear}, the starred version produces no output, and two runs are required.
+\end{docCommands}
+
+
+\clearpage
+\section{Profile Layout} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\label{sec:structure}
+The typeset profiles are laid out according to the following structure.
+
+\begin{enumerate}
+
+\item The contents of \refKey{begin profile}
+
+\item If \refKey{auto header} is \docValue*{true}:
+	\begin{enumerate}
+	\item The contents of \refKey{begin header}
+	\item The contents of \refKey{header format}
+	\item The contents of \refKey{end header}
+	\end{enumerate}
+
+\item If \refKey{life events} and/or \refCom{gprYear}(s) were used:
+	\begin{enumerate}
+	\item The contents of \refKey{begin life events}.
+	\item The events formatted according to the database format configured via the \href{https://ctan.org/pkg/genealogytree}{genealogytree} package. The provided default simply lists life events separated by commas.
+	\item The contents of \refKey{end life events}
+	\end{enumerate}
+
+\item The content provided to the environment by the author.
+
+\item The contents of \refKey{end profile}
+
+\end{enumerate}
+
+
+\section{Name Parsing} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\label{sec:nameparsing}
+Names are parsed according to the configured \refKey{name part order} (some presets are provided with \refKey{name type}), in a left-to-right evaluation.
+
+In order for single name parts to include multiple separate tokens (eg. multiple given names), underscores can be used to combine them. For example, \docValue*{Wolfgang\_Amadeus Mozart} will, with the default \docValue{given and surname} name type, be parsed as the given name(s) \docValue*{Wolfgang Amadeus} and the surname \docValue*{Mozart}.
+
+If the \refKey{name part order} has more parts than the supplied value, the right-most parts will be empty. If this is not desired, one may mark empty name parts with a single underscore; for example, using the \docValue{nordic historical} name type, \docValue*{Jens _ Smed} will parse as the given name \docValue*{Jens}, no patronymic, and the byname \docValue*{Smed} (ie. blacksmith).
+
+Inside a profile environment, a number of shortcuts are provided to access the available name parts, as well as the ID and a full name styled according to the name style keys.
+
+
+\clearpage
+\section{Profile Macros} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+A number of extra macros are available inside profiles to allow accessing some key values.
+
+\begin{docCommand}
+	{gprHeader}
+	{\brackets{}}
+
+	A header styled according to \refKey{header format}.
+
+	If \refKey{auto header} is \docValue*{false}, one may wish to use \refCom{gprHeader} to manually insert the header at the desired location (see \cref{sec:examples} for an example).
+
+\end{docCommand}
+
+
+\begin{docCommands}[
+		doc parameter = {\brackets{}}
+	]
+	{
+		{ doc name = gprID},
+		{ doc name = gprStyledName},
+		{ doc name = gprFullName},
+		{ doc name = gprGivenName},
+		{ doc name = gprPatronymic},
+		{ doc name = gprSurname},
+		{ doc name = gprByname},
+	}
+
+	Typesets the ID and name parts accordig to configured styles.
+
+	The styled name is formatted according to the style keys, see \refKey{givenname style} etc.
+	
+\end{docCommands}
+
+
+\subsection{Option Keys} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{General Options} %---------------------------------------------------------
+
+\label{sec:genconf}
+These are used with the \refCom{gprKeys} command, either globally in the preamble or locally in a group.
+
+\begin{docKey}
+	{auto header}
+	{=\meta{true/false}}
+	{initially \docValue*{false}}
+
+	Automatically inserts a header using \refKey{header format} at the beginning of profiles. See \cref{sec:structure}.
+\end{docKey}
+
+\begin{docKey}
+	{auto id}
+	{=\meta{true/false}}
+	{initially \docValue*{true}}
+
+	Generates an ID for each profile if no \refKey{id} is supplied. The format is the name part initials combined with a number to ensure uniqueness.
+
+	If no ID is set either automatically or manually, an error is emitted.
+\end{docKey}
+
+\begin{docKey}
+	{auto id prefix}
+	{=\meta{...}}
+	{initially not set}
+
+	Prefixes auto-generated IDs with a string, which may be useful for works containing multiple sections.
+\end{docKey}
+
+\begin{docKeys}
+	[
+		doc parameter = {=\meta{...}},
+		doc description = {initially not set},
+	]
+	{
+		{
+			doc name = begin profile,
+		},
+		{
+			doc name = begin header,
+		},
+		{
+			doc name = end header,
+		},
+		{
+			doc name = begin life events,
+		},
+		{
+			doc name = end life events,
+		},
+		{
+			doc name = end profile,
+		},
+	}
+
+	These keys allow configuring arbitrary \LaTeX{} code to be inserted before/during/after the typeset \refEnv{gprProfile} and \refEnv{gprProfile*} environments (see \cref{sec:structure}).
+
+\end{docKeys}
+
+\begin{docKey}
+	{header format}
+	{=\meta{...}}
+	{initially \brackets{\docValue*{\cs{gprStyledName}\brackets{}\cs{hfill}\cs{gprID}\brackets{}}}}
+
+	Formats a profile header. See \refCom{gprID} etc. for available macros.
+\end{docKey}
+
+\begin{docKeys}
+	[
+		doc parameter = {=\meta{...}},
+	]
+	{
+		{
+			doc name = name type,
+			doc description = {initially \docValue{given and surname}}
+		},
+		{
+			doc name = name part order,
+			doc description = {initially \brackets{\docValue*{givenname, surname}}}
+		},
+	}
+
+	The \refKey*{name part order} is used for splitting a \refKey{fullname} to its constituent parts for formatting, index entries, and (if configured) IDs.
+
+	Using the \refKey*{name type} key provides access to a number of preconfigured \refKey*{name part order}s:
+
+	\begin{itemize}
+		\item \docValue{given and surname} will set the \refKey*{name part order} key to \brackets{\docValue*{givenname, surname}} (the default).
+		\item \docValue{nordic historical} will set the \refKey*{name part order} key to \brackets{\docValue*{givenname, patronymic, byname}}, commonly used in Scandinavia and the rest of the nordic countries.
+	\end{itemize}
+
+	If no preset \refKey*{name type} exists for the intended use case, the \refKey*{name part order} can be set directly (suggestions are welcome).
+\end{docKeys}
+
+\begin{docKeys}
+	[
+		doc parameter = {=\meta{...}},
+		doc description = {initially not set},
+	]
+	{
+		{
+			doc name = givenname style,
+		},
+		{
+			doc name = patronymic style,
+		},
+		{
+			doc name = surname style,
+		},
+		{
+			doc name = byname style,
+		},
+	}
+
+	These keys set the styling for each name part, which will be available as the \refCom{gprStyledName}.
+
+\end{docKeys}
+
+\begin{docKeys}
+	[
+		doc parameter = {=\meta{...}},
+		doc description = {initially not set},
+	]
+	{
+		{
+			doc name = id index,
+		},
+		{
+			doc name = fullname index,
+		},
+		{
+			doc name = givenname index,
+		},
+		{
+			doc name = patronymic index,
+		},
+		{
+			doc name = surname index,
+		},
+		{
+			doc name = byname index,
+		},
+	}
+
+	Setting these keys will cause \refEnv{gprProfile} and \refCom{gprRef} to emit index data to the named index. The index must be created with eg. \texttt{imakeidx} before using.
+
+	They can point to the same index (eg. one may wish to use one index for patronymics, surnames, and/or bynames). In fact, that has been set for this document (see final page).
+
+	At the end of the document, \docAuxCommand*{printindex} can then be used for each index as normal.
+
+\end{docKeys}
+
+\begin{docKey}
+	{id in index entries}
+	{=\meta{true/false}}
+	{initially not set}
+
+	Causes index entries to include the IDs in parentheses.
+\end{docKey}
+
+\begin{docKeys}
+	[
+		doc parameter = {=\meta{true/false}},
+		doc description = {initially not set},
+	]
+	{
+		{
+			doc name = include unknown in index,
+		},
+		{
+			doc name = include ambiguous in index,
+		},
+	}
+
+	Causes the indexes to include references to persons with unknown IDs or ambiguous names, which can be used for correcting drafts.
+
+\end{docKeys}
+
+\begin{docKey}
+	{main index entry style}
+	{=\meta{...}}
+	{initially not set}
+
+	Adds formatting to the main index entry page numbers (ie. the ones pointing to the profile), leaving the ones reference with \refCom{gprRef} untouched; for example \docValue*{textbf} will bold the main entry.
+\end{docKey}
+
+\begin{docKey}
+	{nest index entries}
+	{=\meta{true/false}}
+	{initially not set}
+
+	Causes index entries to be nested under the various patronymics/surnames/bynames.
+\end{docKey}
+
+\begin{docKey}
+	{reference style}
+	{=\meta{...}}
+	{see below}
+
+	Formats references. The value is expanded with the arguments \docValue*{\#1} being the name, \docValue*{\#2} being the ID, and \docValue*{\#2} being the page reference. The default is to present these as the name followed by combined super- and subscripts (see also \cref{sec:examples} for another style).
+\end{docKey}
+
+\begin{docKey}
+	{unknown reference style}
+	{=\meta{...}}
+	{see below}
+
+	Formats unknown references. The value is expanded with the arguments \docValue*{\#1} being the name supplied by \refCom{gprRef} and \docValue*{\#2} being a short description of the reason. The default is to present the name as red text with the reason (unknown/ambiguous) following in parentheses.
+\end{docKey}
+
+
+\subsubsection{Profile Options} %---------------------------------------------------------
+
+\label{sec:profopts}
+These are used with the \refEnv{gprProfile} and \refEnv{gprProfile*} environments.
+
+\begin{docKey}
+	{id}
+	{=\meta{...}}
+	{initially not set}
+
+	Sets an ID for the profile. If none is specified and \refKey{auto id} is \docValue*{true}, one will be generated from name initials combined with a number to ensure uniqueness.
+
+	If an already used ID is specified, an error will be emitted.
+
+	Likewise, not specifying an ID while \refKey{auto id} is \docValue*{false} will cause an error.
+\end{docKey}
+
+\begin{docKey}
+	{fullname}
+	{=\marg{...}}
+	{initially not set}
+
+	Sets the full name of the person. If it is specified, the configured \refKey{name part order} will be used to set the individual name parts.
+
+	If it is not specified, one will be generated by combining the given name parts according to the configured \refKey{name part order}, using the below keys. See \cref{sec:nameparsing} for further details.
+\end{docKey}
+
+\begin{docKeys}
+	[
+		doc parameter = {=\meta{...}},
+		doc description = {initially not set},
+	]
+	{
+		{
+			doc name = givenname,
+		},
+		{
+			doc name = patronymic,
+		},
+		{
+			doc name = surname,
+		},
+		{
+			doc name = byname,
+		},
+	}
+
+	Sets individual name parts.
+
+\end{docKeys}
+
+\begin{docKey}
+	{life events}
+	{=\meta{...}}
+	{initially not set}
+
+	Populates a \href{https://ctan.org/pkg/genealogytree}{genealogytree} database, which will be typeset according to the settings of that package; refer to its documenation for configuration. Simple display defaults have been provided.
+
+	For convenience, this key can be set with the final optional argument of the \refEnv{gprProfile} and \refEnv{gprProfile*} environments.
+\end{docKey}
+
+\begin{docKey}
+	{no index}
+	{=\meta{true/false}}
+	{initially not set}
+
+	Skips adding index entries for this profile.
+\end{docKey}
+
+\clearpage
+\section{Examples} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\label{sec:examples}
+
+\subsection{Using \texttt{tcolorbox} \& \docValue*{nordic historical}}
+
+A simple example to show name parsing and use of \refCom{gprRef} and \refCom{gprYear}.
+\begin{dispExample}
+\gprKeys{
+	name type = nordic historical,
+	patronymic style = \itshape,
+	byname style = \scshape,
+	begin profile = {\begin{tcolorbox}[title = \gprHeader]},
+	end life events = \tcblower,
+	end profile = \end{tcolorbox},
+}
+
+\begin{gprProfile}{Jens Hansen}[ birth = {1790}{Denmark} ]
+	Wife: \gprRef{Anne_Marie Olsdatter}.
+
+	Let's also tag some years:
+	\gprYear{1830}, \gprYear{1835}, and \gprYear{1840}.
+\end{gprProfile}
+
+\begin{gprProfile}{Anne_Marie Olsdatter}[ birth = {1795}{Denmark} ]
+	Husband: \gprRef{Jens Hansen}.
+\end{gprProfile}
+
+\begin{gprProfile}{Jens Hansen Smed}
+	An unrelated person with a byname.
+\end{gprProfile}
+
+\end{dispExample}
+
+\clearpage
+\subsection{Using \texttt{hrule} \& \docValue*{given and surname}}
+
+A simple example to show different layout and reference styles.
+
+\begin{dispExample}
+\newcommand\spacedrule{\vspace*{5pt}\hrule\vspace*{5pt}}
+\gprKeys{
+	name type = given and surname,
+	surname style = \scshape,
+	auto header,
+	begin profile = \spacedrule,
+	end life events = \spacedrule,
+	end profile = \spacedrule,
+	reference style = {#1\footnote{#2, #3}}
+}
+
+\begin{gprProfile}{George Washington}[
+	birth = {1732-02-22}{Popes Creek, Virginia Colony},
+	death = {1799-12-14}{Mount Vernon, Virginia, U.S.}
+]
+	Attended the first \gprRef[WM1]{_ Mozart} performance
+	in America in \gprYear{1784}.
+\end{gprProfile}
+
+\end{dispExample}
+
+\clearpage %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\small % because index format=off
+\printindex
+
+\indexprologue{This index was created by setting the keys \refKey*{patronymic index}, \refKey*{surname index}, and \refKey*{byname index} all to the same index.}
+\printindex[gpr-surnames]
+
+\end{document}
