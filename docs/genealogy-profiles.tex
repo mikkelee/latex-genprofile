@@ -19,7 +19,7 @@
 
 This package enables the presenstation of individual \emph{profiles}, which may be useful for genealogical or local history treatises.
 
-Each profile is typeset using key/value-configurable environments, and a number of macros are provided to enable references and name formatting.
+Each profile is typeset using key/value-configurable environments, and a number of macros are provided to enable formatting, references, and floruit calculations.
 
 Issues can be reported at\\\null\hfill\url{https://github.com/mikkelee/latex-genprofile/issues}
 
@@ -119,11 +119,11 @@ The package is configured in the following manner:
 		{ doc parameter = {\sarg\oarg{id}\marg{name}}},
 	}
 
-	Typesets a reference to a profile.
+	Typesets a reference to a profile according to \refKey{reference style}.
 
 	The ID is optional, in case they are not known or available at the time of writing. However, if the name is unique to the document, the reference should automatically be recognized.
 
-	If it is not possible for the package to identify the intended reference, either via ID or unique name, warnings will be emitted in the log as well as in the document (the latter can be configured via the \refKey{unknown reference style}).
+	If it is not possible for the package to identify the intended reference, either via ID or unique name, warnings will be emitted in the log as well as in the document (the latter can be configured via \refKey{unknown reference style}).
 
 	When using an ID, the name parameter can be left empty, or alternately be used to override the displayed name, eg. to change case to genitive, etc.
 
@@ -133,39 +133,6 @@ The package is configured in the following manner:
 \end{docCommands}
 
 
-\begin{docCommands}[
-		doc name = {gprYear}
-	]
-	{
-		{ doc parameter = {\marg{year}}},
-		{ doc parameter = {\sarg\marg{year}}},
-	}
-
-	All tagged years in a profile will be gathered and inserted as a range into a \docValue*{floruit} life event, which will by default only be displayed if there is no defined lifespan (ie. birth or baptism \emph{and} death or burial).
-	
-	The starred version does not typeset anything, and can thus be used to add \enquote{hidden} years to the floruit event.
-
-	These commands require two runs.
-\end{docCommands}
-
-
-\begin{docCommands}[
-		doc name = {gprYears}
-	]
-	{
-		{ doc parameter = {\marg{year range}}},
-		{ doc parameter = {\sarg\marg{year range}}},
-	}
-
-	Adds two years to the \docValue*{floruit} event, by splitting at one or more hyphens.
-
-	Values such as \docValue*{1750--1755} or \docValue*{1750--55} will both be parsed as the two years \docValue*{1750} and \docValue*{1755} and typesets as the expected 1750--1755 or 1750--55, respectively.
-
-	Like \refCom{gprYear}, the starred version produces no output, and two runs are required.
-\end{docCommands}
-
-
-\clearpage
 \section{Profile Layout} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \label{sec:structure}
@@ -199,7 +166,7 @@ The typeset profiles are laid out according to the following structure.
 \section{Name Parsing} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \label{sec:nameparsing}
-Names are parsed according to the configured \refKey{name part order} (some presets are provided with \refKey{name type}), in a left-to-right evaluation.
+Names are parsed according to the configured \refKey{name part order} (some presets are provided via \refKey{name type}), in a left-to-right evaluation.
 
 In order for single name parts to include multiple separate tokens (eg. multiple given names), underscores can be used to combine them. For example, \docValue*{Wolfgang\_Amadeus Mozart} will, with the default \docValue{given and surname} name type, be parsed as the given name(s) \docValue*{Wolfgang Amadeus} and the surname \docValue*{Mozart}.
 
@@ -208,10 +175,9 @@ If the \refKey{name part order} has more parts than the supplied value, the righ
 Inside a profile environment, a number of shortcuts are provided to access the available name parts, as well as the ID and a full name styled according to the name style keys.
 
 
-\clearpage
 \section{Profile Macros} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-A number of extra macros are available inside profiles to allow accessing some key values.
+A number of extra macros are available inside profiles to allow accessing some key values, as well as gather years for floruit calculations.
 
 \begin{docCommand}
 	{gprHeader}
@@ -244,6 +210,38 @@ A number of extra macros are available inside profiles to allow accessing some k
 \end{docCommands}
 
 
+\begin{docCommands}[
+		doc name = {gprYear}
+	]
+	{
+		{ doc parameter = {\marg{year}}},
+		{ doc parameter = {\sarg\marg{year}}},
+	}
+
+	All tagged years in a profile will be gathered and inserted as a \docValue*{floruit} range under \refKey{life events}, which will by default only be displayed if there is no defined lifespan (ie. birth or baptism \emph{and} death or burial).
+	
+	The starred version does not typeset anything, and can thus be used to add \enquote{hidden} years to the floruit event.
+
+	These commands require two runs.
+\end{docCommands}
+
+
+\begin{docCommands}[
+		doc name = {gprYears}
+	]
+	{
+		{ doc parameter = {\marg{year range}}},
+		{ doc parameter = {\sarg\marg{year range}}},
+	}
+
+	Adds two years to the \docValue*{floruit} event, by splitting at one or more hyphens.
+
+	Values such as \docValue*{1750--1755} or \docValue*{1750--55} will both be parsed as the two years \docValue*{1750} and \docValue*{1755} and typeset as the expected 1750--1755 or 1750--55, respectively.
+
+	Like \refCom{gprYear}, the starred version produces no output, and two runs are required.
+\end{docCommands}
+
+
 \subsection{Option Keys} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsubsection{General Options} %---------------------------------------------------------
@@ -264,7 +262,7 @@ These are used with the \refCom{gprKeys} command, either globally in the preambl
 	{=\meta{true/false}}
 	{initially \docValue*{true}}
 
-	Generates an ID for each profile if no \refKey{id} is supplied. The format is the name part initials combined with a number to ensure uniqueness.
+	Automatically generates an ID for each profile if no \refKey{id} is supplied. The format is the name part initials combined with a number to ensure uniqueness.
 
 	If no ID is set either automatically or manually, an error is emitted.
 \end{docKey}
@@ -443,6 +441,14 @@ These are used with the \refCom{gprKeys} command, either globally in the preambl
 \end{docKey}
 
 \begin{docKey}
+	{page reference style}
+	{=\meta{...}}
+	{initially \docValue*{p.\cs{nobreakspace}\#1}}
+
+	Formats page references. The value is expanded with the argument \docValue*{\#1} being the page number.
+\end{docKey}
+
+\begin{docKey}
 	{reference style}
 	{=\meta{...}}
 	{see below}
@@ -462,7 +468,7 @@ These are used with the \refCom{gprKeys} command, either globally in the preambl
 \subsubsection{Profile Options} %---------------------------------------------------------
 
 \label{sec:profopts}
-These are used with the \refEnv{gprProfile} and \refEnv{gprProfile*} environments.
+These are used in the first argument of the \refEnv{gprProfile} and \refEnv{gprProfile*} environments.
 
 \begin{docKey}
 	{id}
@@ -471,9 +477,9 @@ These are used with the \refEnv{gprProfile} and \refEnv{gprProfile*} environment
 
 	Sets an ID for the profile. If none is specified and \refKey{auto id} is \docValue*{true}, one will be generated from name initials combined with a number to ensure uniqueness.
 
-	If an already used ID is specified, an error will be emitted.
-
 	Likewise, not specifying an ID while \refKey{auto id} is \docValue*{false} will cause an error.
+
+	If an already used ID is specified, an error will be emitted.
 \end{docKey}
 
 \begin{docKey}
@@ -588,6 +594,10 @@ A simple example to show different layout and reference styles.
 	in America in \gprYear{1784}.
 \end{gprProfile}
 
+\vspace*{\baselineskip}
+This sentence demonstrates that references work even outside
+profiles: \gprRef[GW1]{_ Washington} was the first president
+of the United States.
 \end{dispExample}
 
 \clearpage %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
