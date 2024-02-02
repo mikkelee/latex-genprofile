@@ -163,6 +163,10 @@
 { Multiple ~ profiles ~ with ~ the ~ name ~ '#1', ~
   you ~ will ~ need ~ to ~ use ~ IDs ~ to ~ reference ~ them }
 
+\msg_new:nnn
+{ genealogy-profiles } { profile-count }
+{ There ~ are ~ #1 ~ profiles ~ in ~ this ~ document. }
+
 \cs_new_protected:Nn \gpr_warning:nn
 {
 	\msg_warning:nnee { genealogy-profiles } { #1 } { #2 } { \the\inputlineno }
@@ -371,6 +375,8 @@
 	\prop_map_inline:Nn \g__gpr_references_prop {
 		\gpr_check_backrefs:nn {##1} {##2}
 	}
+	\msg_note:nne { genealogy-profiles } { profile-count }
+		{ \seq_count:N \g__gpr_used_profile_ids_seq }
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
