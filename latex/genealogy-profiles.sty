@@ -536,8 +536,8 @@
 	{
 		\hyperlink{ \property_ref:nn { gpr/#1/target } { target } } {
 			\gpr__reference_style_handler:nnn {
+				% render styled #3 only if present, otherwise use #2
 				\tl_if_blank:nTF { #3 } { #2 } {
-					% render styled #3 if present
 					\group_begin:
 						\gpr_name_handler:n {#3}
 						\tl_use:N \l__gpr_styled_name_tl
@@ -614,7 +614,7 @@
 \gtrset{database~format=gtr_db_format}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% User commands
+% Environments
 % 
 
 \NewDocumentEnvironment { gprProfile* } { m O{} } {
@@ -738,6 +738,10 @@
 	\end{gprProfile*}
 }
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Reference and name macros
+% 
+
 \cs_new_protected:Nn \gpr_cmd_ref:Nnn
 {
 	\group_begin:
@@ -801,6 +805,9 @@
 	\group_end:
 }
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Floruit macros
+% 
 
 \cs_new_protected:Nn \gpr_cmd_year:n
 {
@@ -812,7 +819,7 @@
 \cs_generate_variant:Nn \gpr_cmd_year:n {
 	e
 }
-\NewDocumentCommand { \gprYear } { s m } {
+\NewDocumentCommand { \gprYear } { s m } { % TODO disable outside profiles?
 	\gpr_cmd_year:e {#2}
 	\bool_if:NF { #1 } { #2 }
 }
@@ -842,11 +849,14 @@
 \cs_generate_variant:Nn \gpr_cmd_years:n {
 	e
 }
-\NewDocumentCommand { \gprYears } { s m } {
+\NewDocumentCommand { \gprYears } { s m } { % TODO disable outside profiles?
 	\gpr_cmd_years:e {#2}
 	\bool_if:NF { #1 } { #2 }
 }
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Experimental!
+% 
 
 \NewDocumentCommand { \gprSpouse } { s o m o } {
 	\gtrsymMarried{} ~
