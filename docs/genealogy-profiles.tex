@@ -28,12 +28,8 @@ Issues can be reported at\\\null\hfill\url{https://github.com/mikkelee/latex-gen
 \gprKeys{
 	name type = given and surname,
 	surname style = \scshape,
-	begin profile = {
-		\begin{tcolorbox}[title = \gprHeader]
-	},
+	layout preset = tcolorbox,
 	begin life events = \small,
-	end life events = \tcblower,
-	end profile = \end{tcolorbox},
 }
 \begin{gprProfile}{Wolfgang_Amadeus Mozart}[
 	birth = {1756-01-27}{Getreidegasse 9, Salzburg},
@@ -310,7 +306,7 @@ These are used with the \refCom{gprKeys} command, either globally in the preambl
 	{=\meta{...}}
 	{initially \brackets{\docValue*{\cs{gprStyledName}\brackets{}\cs{hfill}\cs{gprID}\brackets{}}}}
 
-	Formats a profile header. See \refCom{gprID} etc. for available macros.
+	Formats a profile header, which will be available as \refCom{gprHeader}. See \refCom{gprID} etc. for available macros.
 \end{docKey}
 
 \begin{docKeys}
@@ -334,7 +330,7 @@ These are used with the \refCom{gprKeys} command, either globally in the preambl
 
 	\begin{itemize}
 		\item \docValue{given and surname} will set the \refKey*{name part order} key to \brackets{\docValue*{givenname, surname}} (the default).
-		\item \docValue{nordic historical} will set the \refKey*{name part order} key to \brackets{\docValue*{givenname, patronymic, byname}}, commonly used in Scandinavia and the rest of the nordic countries.
+		\item \docValue{nordic historical} will set the \refKey*{name part order} key to \brackets{\docValue*{givenname, patronymic, byname}}, which was commonly used in Scandinavia and the rest of the nordic countries.
 	\end{itemize}
 
 	If no preset \refKey*{name type} exists for the intended use case, the \refKey*{name part order} can be set directly (suggestions are welcome).
@@ -360,7 +356,7 @@ These are used with the \refCom{gprKeys} command, either globally in the preambl
 		},
 	}
 
-	These keys set the styling for each name part, which will be available as the \refCom{gprStyledName}.
+	These keys set the styling for each name part, which will together be available as the \refCom{gprStyledName}.
 
 \end{docKeys}
 
@@ -392,7 +388,7 @@ These are used with the \refCom{gprKeys} command, either globally in the preambl
 
 	Setting these keys will cause \refEnv{gprProfile} and \refCom{gprRef} to emit index data to the named index. The index must be created with eg. \texttt{imakeidx} before using.
 
-	They can point to the same index (eg. one may wish to use one index for patronymics, surnames, and/or bynames). In fact, that has been set for this document (see final page).
+	They can point to the same index (eg. one may wish to use the same index for patronymics, surnames, and/or bynames). In fact, that has been set for this document (see final page).
 
 	At the end of the document, \docAuxCommand*{printindex} can then be used for each index as normal.
 
@@ -425,11 +421,39 @@ These are used with the \refCom{gprKeys} command, either globally in the preambl
 \end{docKeys}
 
 \begin{docKey}
+	{layout preset}
+	{=\meta{...}}
+	{initially not set}
+
+	Sets a preconfigured style. Currently, two options are available:
+
+	\begin{itemize}
+		\item \docValue{clear} will blank out all the layout keys.
+
+		\item \docValue{tcolorbox} sets the following keys:
+
+		\begin{tcblisting}{listing only}
+			\gprKeys{
+				begin profile = {\begin{tcolorbox}[title=\gprHeader]},
+				end life events = {\tcblower},
+				end profile = {\end{tcolorbox}}
+			}
+		\end{tcblisting}
+
+		The box can be further configured via \docAuxCommand*{tcbset} as per the \href{https://ctan.org/pkg/tcolorbox}{tcolorbox} documentation.
+
+	\end{itemize}
+
+	Suggestions for more presets are welcome.
+
+\end{docKey}
+
+\begin{docKey}
 	{main index entry style}
 	{=\meta{...}}
 	{initially not set}
 
-	Adds formatting to the main index entry page numbers (ie. the ones pointing to the profile), leaving the ones reference with \refCom{gprRef} untouched; for example \docValue*{textbf} will bold the main entry.
+	Adds formatting to the main index entry page numbers (ie. the ones pointing to the profile), leaving the ones referenced with \refCom{gprRef} untouched; for example \docValue*{textbf} will bold the main entry.
 \end{docKey}
 
 \begin{docKey}
@@ -453,7 +477,9 @@ These are used with the \refCom{gprKeys} command, either globally in the preambl
 	{=\meta{...}}
 	{see below}
 
-	Formats references. The value is expanded with the arguments \docValue*{\#1} being the name, \docValue*{\#2} being the ID, and \docValue*{\#2} being the page reference. The default is to present these as the name followed by combined super- and subscripts (see also \cref{sec:examples} for another style).
+	Formats references. The value is expanded with the arguments \docValue*{\#1} being the name, \docValue*{\#2} being the ID, and \docValue*{\#3} being the page reference. The default is to present these as the name followed by combined super- and subscripts (see also \cref{sec:examples} for another style).
+
+	The result is wrapped in a hyperref link to the referenced profile.
 \end{docKey}
 
 \begin{docKey}
@@ -477,9 +503,9 @@ These are used in the first argument of the \refEnv{gprProfile} and \refEnv{gprP
 
 	Sets an ID for the profile. If none is specified and \refKey{auto id} is \docValue*{true}, one will be generated from name initials combined with a number to ensure uniqueness.
 
-	Likewise, not specifying an ID while \refKey{auto id} is \docValue*{false} will cause an error.
+	Not specifying an ID while \refKey{auto id} is \docValue*{false} will cause an error.
 
-	If an already used ID is specified, an error will be emitted.
+	Likewise, if an already used ID is specified, an error will be emitted.
 \end{docKey}
 
 \begin{docKey}
@@ -521,7 +547,7 @@ These are used in the first argument of the \refEnv{gprProfile} and \refEnv{gprP
 	{=\meta{...}}
 	{initially not set}
 
-	Populates a \href{https://ctan.org/pkg/genealogytree}{genealogytree} database, which will be typeset according to the settings of that package; refer to its documenation for configuration. Simple display defaults have been provided.
+	Populates a \href{https://ctan.org/pkg/genealogytree}{genealogytree} database, which will be typeset according to the settings of that package; refer to its documentation for configuration. Simple display defaults have been provided.
 
 	For convenience, this key can be set with the final optional argument of the \refEnv{gprProfile} and \refEnv{gprProfile*} environments.
 \end{docKey}
@@ -539,7 +565,7 @@ These are used in the first argument of the \refEnv{gprProfile} and \refEnv{gprP
 
 \label{sec:examples}
 
-\subsection{Using \texttt{tcolorbox} \& \docValue*{nordic historical}}
+\subsection{Using \docValue*{tcolorbox} \& \docValue*{nordic historical}}
 
 A simple example to show name parsing and use of \refCom{gprRef} and \refCom{gprYear}.
 \begin{dispExample}
@@ -547,9 +573,7 @@ A simple example to show name parsing and use of \refCom{gprRef} and \refCom{gpr
 	name type = nordic historical,
 	patronymic style = \itshape,
 	byname style = \scshape,
-	begin profile = {\begin{tcolorbox}[title = \gprHeader]},
-	end life events = \tcblower,
-	end profile = \end{tcolorbox},
+	layout preset = tcolorbox,
 }
 
 \begin{gprProfile}{Jens Hansen}[ birth = {1790}{Denmark} ]
@@ -570,7 +594,7 @@ A simple example to show name parsing and use of \refCom{gprRef} and \refCom{gpr
 \end{dispExample}
 
 \clearpage
-\subsection{Using \texttt{hrule} \& \docValue*{given and surname}}
+\subsection{Using Custom Layout \& \docValue*{given and surname}}
 
 A simple example to show different layout and reference styles.
 
@@ -582,8 +606,8 @@ A simple example to show different layout and reference styles.
 	auto header,
 	begin profile = \spacedrule,
 	end life events = \spacedrule,
-	end profile = \spacedrule,
-	reference style = {#1\footnote{#2, #3}}
+	end profile = {\spacedrule\vspace*{\baselineskip}},
+	reference style = {#1\footnote{#2,~#3}}
 }
 
 \begin{gprProfile}{George Washington}[
@@ -594,7 +618,6 @@ A simple example to show different layout and reference styles.
 	in America in \gprYear{1784}.
 \end{gprProfile}
 
-\vspace*{\baselineskip}
 This sentence demonstrates that references work even outside
 profiles: \gprRef[GW1]{_ Washington} was the first president
 of the United States.
