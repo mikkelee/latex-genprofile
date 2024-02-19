@@ -46,6 +46,33 @@
 	begin~life~events			.tl_set:N		= \l__gpr_begin_life_events_tl ,
 	end~life~events				.tl_set:N		= \l__gpr_end_life_events_tl ,
 
+	layout~preset				.choices:nn		= {
+			clear ,
+			tcolorbox
+		} {
+			\int_case:nn { \l_keys_choice_int } {
+				{1} {
+					\tl_clear:N \l__gpr_begin_profile_tl
+					\tl_clear:N \l__gpr_end_profile_tl
+					\tl_clear:N \l__gpr_begin_header_tl
+					\tl_clear:N \l__gpr_end_header_tl
+					\tl_clear:N \l__gpr_begin_life_events_tl
+					\tl_clear:N \l__gpr_end_life_events_tl
+				}
+				{2} { 
+					\tl_set:Nn \l__gpr_begin_profile_tl {
+						\begin{tcolorbox}[title = \gprHeader]
+					}
+					\tl_set:Nn \l__gpr_end_life_events_tl {
+						\tcblower
+					}
+					\tl_set:Nn \l__gpr_end_profile_tl {
+						\end{tcolorbox}
+					}
+				}
+			}
+		} ,
+
 	reference~style				.cs_set:Np		= \gpr__reference_style_handler:nnn #1#2#3 ,
 	unknown~reference~style		.cs_set:Np		= \gpr__unknown_reference_handler:nn #1#2 ,
 	page~number~style			.cs_set:Np		= \gpr__page_number_handler:n #1 ,

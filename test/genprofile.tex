@@ -6,6 +6,7 @@
 \usepackage[asterism]{sectionbreak}
 \usepackage{tcolorbox}
 \tcbuselibrary{breakable}
+\tcbset{breakable}
 \usepackage{lipsum}
 
 \usepackage{imakeidx}
@@ -20,14 +21,7 @@
 	name type = nordic historical,
 	patronymic style = {\itshape},
 	byname style = {\scshape},
-	begin profile = {
-		\begin{tcolorbox}[
-			breakable,
-			title = \gprHeader
-		]
-	},
-	end life events = \tcblower,
-	end profile = {\end{tcolorbox}},
+	layout preset = tcolorbox,
 	id index = gpr-id,
 	fullname index = gpr-fullname,
 	patronymic index = gpr-patronymic,
