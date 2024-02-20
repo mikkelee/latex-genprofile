@@ -243,17 +243,15 @@
 % Names
 % 
 
-\tl_const:Ne \c_gpr_underscore_tl { \char_generate:nn { `_ } { 8 } }
-
 \cs_new_protected:Nn \gpr_name_handler:n
 {
 	\tl_set:Nn \l__gpr_fullname_tl {#1}
-	\tl_replace_all:NVn \l__gpr_fullname_tl \c_gpr_underscore_tl { ~ }
+	\regex_replace_all:nnN { \s*_\s* } { \  } \l__gpr_fullname_tl
 
 	\seq_set_split:Nnn \l_tmpa_seq {~} {#1}
 	\seq_map_indexed_inline:Nn \g__gpr_name_part_order_seq {
 		\tl_set:Ne \l_tmpa_tl { \seq_item:Nn \l_tmpa_seq {##1} }
-		\tl_replace_all:NVn \l_tmpa_tl \c_gpr_underscore_tl { ~ }
+		\regex_replace_all:nnN { \s*_\s* } { \  } \l_tmpa_tl
 		\tl_if_blank:VTF \l_tmpa_tl {
 			\tl_clear:c { l__gpr_##2_tl }
 		} {
