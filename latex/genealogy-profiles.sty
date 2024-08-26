@@ -77,21 +77,12 @@
 	unknown~reference~style		.cs_set:Np		= \gpr__unknown_reference_handler:nn #1#2 ,
 	page~number~style			.cs_set:Np		= \gpr__page_number_handler:n #1 ,
 
-	% name part styling
-	givenname~style				.tl_set:N		= \l__gpr_givenname_style_tl ,
-	patronymic~style			.tl_set:N		= \l__gpr_patronymic_style_tl ,
-	surname~style				.tl_set:N		= \l__gpr_surname_style_tl ,
-	byname~style				.tl_set:N		= \l__gpr_byname_style_tl ,
-
 	header~format				.tl_set:N		= \l__gpr_header_format_tl ,
 	auto~header					.bool_set:N 	= \l__gpr_auto_header_bool ,
 
 	% indexes
 	id~index					.tl_set:N		= \l__gpr_id_index_tl ,
 	fullname~index				.tl_set:N		= \l__gpr_fullname_index_tl ,
-	patronymic~index			.tl_set:N		= \l__gpr_patronymic_index_tl ,
-	surname~index				.tl_set:N		= \l__gpr_surname_index_tl ,
-	byname~index				.tl_set:N		= \l__gpr_byname_index_tl ,
 
 	nest~index~entries			.bool_set:N 	= \l__gpr_nest_index_entries_bool ,
 	id~in~index~entries			.bool_set:N 	= \l__gpr_id_in_index_entries_bool ,
@@ -108,10 +99,6 @@
 {
 	id							.tl_set:N		= \l__gpr_id_tl ,
 	fullname					.tl_set:N		= \l__gpr_fullname_tl ,
-	givenname					.tl_set:N		= \l__gpr_givenname_tl ,
-	patronymic					.tl_set:N		= \l__gpr_patronymic_tl ,
-	surname						.tl_set:N		= \l__gpr_surname_tl ,
-	byname						.tl_set:N		= \l__gpr_byname_tl ,
 
 	life~events					.tl_set:N		= \l__gpr_life_events_tl ,
 
@@ -121,6 +108,27 @@
 \NewDocumentCommand { \gprKeys } { +m } {
 	\keys_set:nn { genealogy-profiles } { #1 }
 }
+
+\NewDocumentCommand { \gprCreateNamePart } { m o } {
+	\keys_define:nn { genealogy-profiles } {
+		#1~style				.tl_set:c		= { l__gpr_#1_style_tl } ,
+		#1~index				.tl_set:c		= { l__gpr_#1_index_tl } ,
+	}
+	\keys_define:nn { genealogy-profiles / profile } {
+		#1						.tl_set:c		= { l__gpr_#1_tl } ,
+	}
+	\IfValueTF { #2 } {
+		\tl_set:cn { l__gpr_#1_cmd_tl } { #2 }
+	} {
+		\tl_set:ce { l__gpr_#1_cmd_tl } { gpr \text_titlecase_first:n { #1 } }
+	}
+	\seq_new:c { l__gpr_#1_index_before_seq }
+	\seq_new:c { l__gpr_#1_index_after_seq }
+}
+\gprCreateNamePart { givenname } [ gprGivenName ]
+\gprCreateNamePart { patronymic }
+\gprCreateNamePart { surname }
+\gprCreateNamePart { byname }
 
 % set some defaults
 \keys_set:nn { genealogy-profiles } {
@@ -416,29 +424,44 @@
 	}
 }
 \cs_generate_variant:Nn \gpr_add_to_named_index:nnN {
-	VVN, VeN
+	VVN, VeN, vVN
 }
 
-\cs_new:Nn \gpr_build_index_entry:Nnnn {
-	\seq_clear:N \l_tmpa_seq
-	\clist_map_inline:nn {#2} {
-		\tl_if_blank:vF { l__gpr_##1_tl } {
-			\seq_put_right:Nv \l_tmpa_seq { l__gpr_##1_tl }
+\cs_new:Nn \gpr_build_index_entry:nnN {
+	\tl_if_blank:vF { l__gpr_#1_tl } {
+		% build before/after seqs if not defined
+		\seq_if_empty:cT { l__gpr_#1_index_before_seq } {
+			\tl_set:Nn \l_tmpa_tl { l__gpr_#1_index_after_seq }
+			\seq_map_inline:Nn \g__gpr_name_part_order_seq {
+				\tl_if_eq:nnT { #1 } { ##1 } {
+					\tl_set:Nn \l_tmpa_tl { l__gpr_#1_index_before_seq }
+				}
+				\seq_put_right:cn { \tl_use:N \l_tmpa_tl } { ##1 }
+			}
 		}
-	}
 
-	\seq_clear:N \l_tmpb_seq
-	\clist_map_inline:nn {#3} {
-		\tl_if_blank:vF { l__gpr_##1_tl } {
-			\seq_put_right:Nv \l_tmpb_seq { l__gpr_##1_tl }
+		\seq_clear:N \l_tmpa_seq
+		\seq_map_inline:cn { l__gpr_#1_index_before_seq } {
+			\tl_if_blank:vF { l__gpr_##1_tl } {
+				\seq_put_right:Nv \l_tmpa_seq { l__gpr_##1_tl }
+			}
 		}
-	}
-
-	\tl_set:Ne #1 {
-		\seq_use:Nn \l_tmpa_seq {~}
-		\bool_if:NTF \l__gpr_nest_index_entries_bool { ! } { ,~ }
-		\seq_use:Nn \l_tmpb_seq {~}
-		\bool_if:NT \l__gpr_id_in_index_entries_bool { ~ (#4) }
+	
+		\seq_clear:N \l_tmpb_seq
+		\seq_map_inline:cn { l__gpr_#1_index_after_seq } {
+			\tl_if_blank:vF { l__gpr_##1_tl } {
+				\seq_put_right:Nv \l_tmpb_seq { l__gpr_##1_tl }
+			}
+		}
+	
+		\tl_set:Ne \l_tmpa_tl {
+			\seq_use:Nn \l_tmpa_seq {~}
+			\bool_if:NTF \l__gpr_nest_index_entries_bool { ! } { ,~ } % TODO no comma for given
+			\seq_use:Nn \l_tmpb_seq {~}
+			\bool_if:NT \l__gpr_id_in_index_entries_bool { ~ (#2) }
+		}
+		
+		\gpr_add_to_named_index:vVN { l__gpr_#1_index_tl } \l_tmpa_tl #3
 	}
 }
 
@@ -453,7 +476,7 @@
 	}
 
 	\tl_if_blank:VF \l__gpr_fullname_index_tl {
-		\gpr_add_to_named_index:VVN
+		\gpr_add_to_named_index:VeN
 			\l__gpr_fullname_index_tl
 			{
 				\tl_use:N \l__gpr_fullname_tl
@@ -463,34 +486,13 @@
 	}
 
 	\tl_if_blank:VF \l__gpr_patronymic_index_tl {
-		\tl_if_blank:VF \l__gpr_patronymic_tl {
-			\gpr_build_index_entry:Nnnn \l_tmpa_tl
-				{ patronymic, surname, byname }
-				{ givenname }
-				{ #1 }
-		
-			\gpr_add_to_named_index:VVN \l__gpr_patronymic_index_tl \l_tmpa_tl #2
-		}
+		\gpr_build_index_entry:nnN { patronymic } { #1 } #2
 	}
 	\tl_if_blank:VF \l__gpr_surname_index_tl {
-		\tl_if_blank:VF \l__gpr_surname_tl {
-			\gpr_build_index_entry:Nnnn \l_tmpa_tl
-				{ surname, byname }
-				{ givenname, patronymic }
-				{ #1 }
-		
-			\gpr_add_to_named_index:VVN \l__gpr_surname_index_tl \l_tmpa_tl #2
-		}
+		\gpr_build_index_entry:nnN { surname } { #1 } #2
 	}
 	\tl_if_blank:VF \l__gpr_byname_index_tl {
-		\tl_if_blank:VF \l__gpr_byname_tl {
-			\gpr_build_index_entry:Nnnn \l_tmpa_tl
-				{ byname }
-				{ givenname, patronymic, surname }
-				{ #1 }
-		
-			\gpr_add_to_named_index:VVN \l__gpr_byname_index_tl \l_tmpa_tl #2
-		}
+		\gpr_build_index_entry:nnN { byname } { #1 } #2
 	}
 }
 \cs_generate_variant:Nn \gpr_add_to_indexes:nN {
@@ -704,14 +706,17 @@
 		\seq_clear_new:N \l__gpr_floruit_years_seq
 
 		% placeholders for id and names
-		\cs_set:Npe \gprID { \tl_use:N \l__gpr_id_tl }
-		\cs_set:Npe \gprStyledName { \tl_use:N \l__gpr_styled_name_tl }
-		\cs_set:Npe \gprFullName { \tl_use:N \l__gpr_fullname_tl }
-		\cs_set:Npe \gprGivenName { \tl_use:N \l__gpr_givenname_tl }
-		\cs_set:Npe \gprPatronymic { \tl_use:N \l__gpr_patronymic_tl }
-		\cs_set:Npe \gprSurname { \tl_use:N \l__gpr_surname_tl }
-		\cs_set:Npe \gprByname { \tl_use:N \l__gpr_byname_tl }
-		\cs_set:Npe \gprHeader { \tl_use:N \l__gpr_header_format_tl }
+		\cs_set:Npn \gprID { \tl_use:N \l__gpr_id_tl }
+		\cs_set:Npn \gprStyledName { \tl_use:N \l__gpr_styled_name_tl }
+		\cs_set:Npn \gprFullName { \tl_use:N \l__gpr_fullname_tl }
+		\cs_set:Npn \gprHeader { \tl_use:N \l__gpr_header_format_tl }
+		% name parts
+		\seq_map_inline:Nn \g__gpr_name_part_order_seq {
+			\exp_args:Nv
+				\cs_set:cpn
+				{ l__gpr_##1_cmd_tl }
+				{ \tl_use:c { l__gpr_##1_tl } }
+		}
 
 		% set hyperref target just before typesetting
 		\MakeLinkTarget*{ gpr/\tl_use:N \l__gpr_id_tl/target }
