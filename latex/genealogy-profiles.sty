@@ -141,7 +141,7 @@
 	include~unknown~in~index ,
 	include~ambiguous~in~index ,
 	name~type = { given~and~surname } ,
-	header~format = { \gprStyledName \hfill \gprID } ,
+	header~format = { \gprFullName \hfill \gprID } ,
 	reference~style = {
 			#1 \gpr_super_subscript:nn {#2} {#3}
 		} ,
@@ -654,6 +654,17 @@
 % Environments
 % 
 
+\cs_new_protected:Nn \gpr_create_profile_macro:nnn
+{
+	\exp_args:Nc \DeclareDocumentCommand { #1 } { s }
+		{
+			\IfBooleanTF { ##1 } { #2 } { #3 }
+		}
+}
+\cs_generate_variant:Nn \gpr_create_profile_macro:nnn {
+	vvn
+}
+
 \NewDocumentEnvironment { gprProfile* } { m O{} } {
 	\bool_if:NT \l__gpr_debug_log_bool {
 		\tl_log:e {\the\inputlineno}
@@ -716,16 +727,23 @@
 		\seq_clear_new:N \l__gpr_floruit_years_seq
 
 		% placeholders for id and names
-		\cs_set:Npn \gprID { \tl_use:N \l__gpr_id_tl }
-		\cs_set:Npn \gprStyledName { \tl_use:N \l__gpr_styled_name_tl }
-		\cs_set:Npn \gprFullName { \tl_use:N \l__gpr_fullname_tl }
 		\cs_set:Npn \gprHeader { \tl_use:N \l__gpr_header_format_tl }
+		\cs_set:Npn \gprID { \tl_use:N \l__gpr_id_tl } % TODO + style
+		\gpr_create_profile_macro:nnn { gprFullName } {
+			\tl_use:N \l__gpr_fullname_tl
+		} {
+			\tl_use:N \l__gpr_styled_name_tl
+		}
 		% name parts
 		\seq_map_inline:Nn \g__gpr_name_part_order_seq {
-			\exp_args:Nv
-				\cs_set:cpn
-				{ l__gpr_##1_cmd_tl }
-				{ \tl_use:c { l__gpr_##1_tl } }
+			\gpr_create_profile_macro:vvn { l__gpr_##1_cmd_tl }
+				{ l__gpr_##1_tl }
+				{
+					\group_begin:
+						\tl_use:c { l__gpr_##1_style_tl }
+						\tl_use:c { l__gpr_##1_tl }
+					\group_end:
+				}
 		}
 
 		% set hyperref target just before typesetting
@@ -893,6 +911,12 @@
 	\gpr_cmd_years:e {#2}
 	\bool_if:NF { #1 } { #2 }
 }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Deprecations
+% 
+
+\cs_new:Npn \gprStyledName { \gprFullName }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Experimental!
