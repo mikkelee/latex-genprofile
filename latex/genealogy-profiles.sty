@@ -14,7 +14,12 @@
 \keys_define:nn { genealogy-profiles }
 {
 	name~part~order				.code:n			= {
-			\seq_gset_from_clist:Nn \g__gpr_name_part_order_seq {#1}
+			\seq_gset_from_clist:Nn \g__gpr_name_part_order_seq { #1 }
+			\seq_map_inline:Nn \g__gpr_name_part_order_seq {
+				\tl_if_exist:cF { l__gpr_#1_tl } {
+					\gpr_error:nn { name-part-missing } { #1 }
+				}
+			}
 		} ,
 	name~type					.choices:nn		= {
 			given~and~surname ,
@@ -201,6 +206,11 @@
 \msg_new:nnn
 { genealogy-profiles } { profile-count }
 { There ~ are ~ #1 ~ profiles ~ in ~ this ~ document. }
+
+\msg_new:nnnn
+{ genealogy-profiles } { name-part-missing }
+{ Use ~ of ~ unknown ~ name ~ part ~ "#1" ~ on ~ input ~ line ~ #2 }
+{ Create ~ it ~ with ~ gprCreateNamePart ~ first. }
 
 \cs_new_protected:Nn \gpr_warning:nn
 {
