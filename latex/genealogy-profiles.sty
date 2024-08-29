@@ -123,13 +123,18 @@
 		#1						.tl_set:c		= { l__gpr_#1_tl } ,
 	}
 	\IfValueTF { #2 } {
-		\tl_set:cn { l__gpr_#1_cmd_tl } { #2 }
+		\tl_set:Nn \l_tmpa_tl { #2 }
 	} {
-		\tl_set:ce { l__gpr_#1_cmd_tl } { gpr \text_titlecase_first:n { #1 } }
+		\tl_set:Ne \l_tmpa_tl { gpr \text_titlecase_first:n { #1 } }
+	}
+	\tl_set:cV { l__gpr_#1_cmd_tl } \l_tmpa_tl
+	\exp_args:Nc \NewDocumentCommand { \l_tmpa_tl Style } { m } {
+		\gpr_name_part_style:nn { #1 } { ##1 }
 	}
 	\seq_new:c { l__gpr_#1_index_before_seq }
 	\seq_new:c { l__gpr_#1_index_after_seq }
 }
+
 \gprCreateNamePart { givenname } [ gprGivenName ]
 \gprCreateNamePart { patronymic }
 \gprCreateNamePart { surname }
@@ -531,6 +536,17 @@
 	\tl_set:Nn #1 { \seq_use:Nn \l__gpr_styled_name_seq {~} }
 }
 
+\cs_new_protected:Nn \gpr_name_part_style:nn
+{
+	\group_begin:
+		\tl_use:c { l__gpr_#1_style_tl }
+		#2
+	\group_end:
+}
+\cs_generate_variant:Nn \gpr_name_part_style:nn {
+	nv
+}
+
 \cs_new_protected:Nn \gpr_format_floruit:N
 {
 	\int_compare:nNnTF { \seq_count:N \l__gpr_floruit_years_seq } = {1}
@@ -739,10 +755,7 @@
 			\gpr_create_profile_macro:vvn { l__gpr_##1_cmd_tl }
 				{ l__gpr_##1_tl }
 				{
-					\group_begin:
-						\tl_use:c { l__gpr_##1_style_tl }
-						\tl_use:c { l__gpr_##1_tl }
-					\group_end:
+					\gpr_name_part_style:nv { ##1 } { l__gpr_##1_tl }
 				}
 		}
 
