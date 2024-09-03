@@ -28,11 +28,11 @@
 			\int_case:nn { \l_keys_choice_int } {
 				{1} { 
 					\seq_gset_from_clist:Nn \g__gpr_name_part_order_seq
-						{ givenname, surname }
+						{ given~name, surname }
 				}
 				{2} {
 					\seq_gset_from_clist:Nn \g__gpr_name_part_order_seq
-						{ givenname, patronymic, byname }
+						{ given~name, patronymic, byname }
 				}
 			}
 			
@@ -125,7 +125,11 @@
 	\IfValueTF { #2 } {
 		\tl_set:Nn \l_tmpa_tl { #2 }
 	} {
-		\tl_set:Ne \l_tmpa_tl { gpr \text_titlecase_first:n { #1 } }
+		\tl_set:Nn \l_tmpa_tl { gpr }
+		\seq_set_split:Nnn \l_tmpa_seq { ~ } { #1 }
+		\seq_map_inline:Nn \l_tmpa_seq {
+			\tl_put_right:Nn \l_tmpa_tl { \text_titlecase_first:n { ##1 } }
+		}
 	}
 	\tl_set:cV { l__gpr_#1_cmd_tl } \l_tmpa_tl
 	\exp_args:Nc \NewDocumentCommand { \l_tmpa_tl Style } { m } {
@@ -135,7 +139,7 @@
 	\seq_new:c { l__gpr_#1_index_after_seq }
 }
 
-\gprCreateNamePart { givenname } [ gprGivenName ]
+\gprCreateNamePart { given~name }
 \gprCreateNamePart { patronymic }
 \gprCreateNamePart { surname }
 \gprCreateNamePart { byname }
@@ -930,6 +934,15 @@
 % 
 
 \cs_new:Npn \gprStyledName { \gprFullName }
+
+\keys_define:nn { genealogy-profiles }
+{
+	givenname~style				.tl_set:c		= { l__gpr_given~name_style_tl } ,
+	givenname~index				.tl_set:c		= { l__gpr_given~name_index_tl } ,
+}
+\keys_define:nn { genealogy-profiles / profile } {
+	givenname					.tl_set:c		= { l__gpr_given~name_tl } ,
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Experimental!
