@@ -504,14 +504,10 @@
 			#2
 	}
 
-	\tl_if_blank:VF \l__gpr_patronymic_index_tl {
-		\gpr_build_index_entry:nnN { patronymic } { #1 } #2
-	}
-	\tl_if_blank:VF \l__gpr_surname_index_tl {
-		\gpr_build_index_entry:nnN { surname } { #1 } #2
-	}
-	\tl_if_blank:VF \l__gpr_byname_index_tl {
-		\gpr_build_index_entry:nnN { byname } { #1 } #2
+	\seq_map_inline:Nn \g__gpr_name_part_order_seq {
+		\tl_if_empty:cF { l__gpr_##1_index_tl } {
+			\gpr_build_index_entry:nnN { ##1 } { #1 } #2
+		}
 	}
 }
 \cs_generate_variant:Nn \gpr_add_to_indexes:nN {
