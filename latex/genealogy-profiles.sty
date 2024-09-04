@@ -96,6 +96,7 @@
 	include~unknown~in~index	.default:n		= { true } ,
 	include~ambiguous~in~index	.bool_set:N 	= \l__gpr_include_ambiguous_in_index_bool ,
 	include~ambiguous~in~index	.default:n		= { true } ,
+	use~styles~in~index			.bool_set:N		= \l__gpr_use_styles_in_index_bool ,
 
 	debug~log					.bool_set:N 	= \l__gpr_debug_log_bool
 }
@@ -446,6 +447,28 @@
 	VVN, VeN, vVN
 }
 
+\cs_new_protected:Nn \gpr_get_name_parts:NNN
+{
+	\seq_clear:N #1
+	\seq_map_inline:Nn #2 {
+		\tl_if_blank:vF { l__gpr_##1_tl } {
+			\bool_if:NTF #3 {
+				\seq_put_right:Ne #1 {
+					\use:c
+						{ \tl_use:c { l__gpr_##1_cmd_tl } Style }
+						{ \tl_use:c { l__gpr_##1_tl } }
+				}
+			} {
+				\seq_put_right:Nv #1 { l__gpr_##1_tl }
+			}
+		}
+	}
+}
+\cs_generate_variant:Nn \gpr_get_name_parts:NNN {
+	NcN
+}
+
+
 \cs_new:Nn \gpr_build_index_entry:nnN {
 	\tl_if_blank:vF { l__gpr_#1_tl } {
 		% build before/after seqs if not defined
@@ -459,37 +482,68 @@
 			}
 		}
 
-		\seq_clear:N \l_tmpa_seq
-		\seq_map_inline:cn { l__gpr_#1_index_before_seq } {
-			\tl_if_blank:vF { l__gpr_##1_tl } {
-				\seq_put_right:Nv \l_tmpa_seq { l__gpr_##1_tl }
-			}
-		}
-	
-		\seq_clear:N \l_tmpb_seq
-		\seq_map_inline:cn { l__gpr_#1_index_after_seq } {
-			\tl_if_blank:vF { l__gpr_##1_tl } {
-				\seq_put_right:Nv \l_tmpb_seq { l__gpr_##1_tl }
-			}
-		}
-	
+		\gpr_get_name_parts:NcN \l_tmpa_seq { l__gpr_#1_index_before_seq } \c_false_bool
 		\tl_set:Ne \l_tmpa_tl {
 			\seq_use:Nn \l_tmpa_seq {~}
-			\bool_if:NTF \l__gpr_nest_index_entries_bool { ! } { ,~ } % TODO no comma for given
-			\seq_use:Nn \l_tmpb_seq {~}
-			\bool_if:NT \l__gpr_id_in_index_entries_bool { ~ (#2) }
 		}
-		
+		\bool_if:NTF \l__gpr_nest_index_entries_bool {
+			\bool_if:NT \l__gpr_use_styles_in_index_bool {
+				\gpr_get_name_parts:NcN \l_tmpb_seq { l__gpr_#1_index_before_seq } \c_true_bool
+				\tl_put_right:Ne \l_tmpa_tl { @ \seq_use:Nn \l_tmpb_seq {~} }
+			}
+	
+			\gpr_get_name_parts:NcN \l_tmpa_seq { l__gpr_#1_index_after_seq } \c_false_bool
+			\tl_put_right:Ne \l_tmpa_tl {
+				!
+				\seq_use:Nn \l_tmpa_seq {~}
+				\bool_if:NT \l__gpr_id_in_index_entries_bool { ~ (#2) }
+			}
+			\bool_if:NT \l__gpr_use_styles_in_index_bool {
+				\gpr_get_name_parts:NcN \l_tmpb_seq { l__gpr_#1_index_after_seq } \c_true_bool
+				\tl_put_right:Ne \l_tmpa_tl {
+					@
+					\seq_use:Nn \l_tmpb_seq {~}
+					\bool_if:NT \l__gpr_id_in_index_entries_bool { ~ (#2) }
+				}
+			}
+		} {
+			\gpr_get_name_parts:NcN \l_tmpb_seq { l__gpr_#1_index_after_seq } \c_false_bool
+			\tl_put_right:Ne \l_tmpa_tl {
+				,~ % TODO no comma for given?
+				\seq_use:Nn \l_tmpb_seq {~}
+				\bool_if:NT \l__gpr_id_in_index_entries_bool { ~ (#2) }
+			}
+			\bool_if:NT \l__gpr_use_styles_in_index_bool {
+				\gpr_get_name_parts:NcN \l_tmpa_seq { l__gpr_#1_index_before_seq } \c_true_bool
+				\gpr_get_name_parts:NcN \l_tmpb_seq { l__gpr_#1_index_after_seq } \c_true_bool
+				\tl_put_right:Ne \l_tmpa_tl {
+					@
+					\seq_use:Nn \l_tmpa_seq {~}
+					,~ % TODO no comma for given?
+					\seq_use:Nn \l_tmpb_seq {~}
+					\bool_if:NT \l__gpr_id_in_index_entries_bool { ~ (#2) }
+				}
+			}
+		}
+
 		\gpr_add_to_named_index:vVN { l__gpr_#1_index_tl } \l_tmpa_tl #3
 	}
 }
 
 \cs_new:Nn \gpr_add_to_indexes:nN
 {
+	\tl_set_eq:NN \l_tpma_tl \l__gpr_fullname_tl
+	\bool_if:NT \l__gpr_use_styles_in_index_bool {
+		\tl_put_right:Ne \l_tpma_tl
+			{
+				@ \l__gpr_styled_name_tl
+			}
+	}
+
 	\tl_if_blank:VF \l__gpr_id_index_tl {
 		\tl_if_novalue:nF {#1} {
 			\gpr_add_to_named_index:VeN \l__gpr_id_index_tl
-				{ #1 ~ \tl_use:N \l__gpr_fullname_tl }
+				{ #1 ~ \tl_use:N \l_tpma_tl }
 				#2
 		}
 	}
@@ -498,7 +552,7 @@
 		\gpr_add_to_named_index:VeN
 			\l__gpr_fullname_index_tl
 			{
-				\tl_use:N \l__gpr_fullname_tl
+				\tl_use:N \l_tpma_tl
 				\bool_if:NT \l__gpr_id_in_index_entries_bool { ~ (\tl_use:N #1) }
 			}
 			#2
@@ -524,11 +578,10 @@
 
 	\seq_map_inline:Nn \g__gpr_name_part_order_seq {
 		\tl_if_blank:vF { l__gpr_##1_tl } {
-			\seq_put_right:Nn \l__gpr_styled_name_seq {
-				\group_begin:
-					\tl_use:c { l__gpr_##1_style_tl }
-					\tl_use:c { l__gpr_##1_tl }
-				\group_end:
+			\seq_put_right:Ne \l__gpr_styled_name_seq {
+				\use:c
+					{ \tl_use:c { l__gpr_##1_cmd_tl } Style }
+					{ \tl_use:c { l__gpr_##1_tl } }
 			}
 		}
 	}
