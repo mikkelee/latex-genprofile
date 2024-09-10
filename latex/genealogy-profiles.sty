@@ -86,7 +86,6 @@
 	auto~header					.bool_set:N 	= \l__gpr_auto_header_bool ,
 
 	% indexes
-	id~index					.tl_set:N		= \l__gpr_id_index_tl ,
 	fullname~index				.tl_set:N		= \l__gpr_fullname_index_tl ,
 
 	nest~index~entries			.bool_set:N 	= \l__gpr_nest_index_entries_bool ,
@@ -103,7 +102,6 @@
 
 \keys_define:nn { genealogy-profiles / profile }
 {
-	id							.tl_set:N		= \l__gpr_id_tl ,
 	fullname					.tl_set:N		= \l__gpr_fullname_tl ,
 
 	life~events					.tl_set:N		= \l__gpr_life_events_tl ,
@@ -115,7 +113,8 @@
 	\keys_set:nn { genealogy-profiles } { #1 }
 }
 
-\NewDocumentCommand { \gprCreateNamePart } { m o } {
+\cs_new_protected:Nn \gpr_create_style_keys:nn
+{
 	\keys_define:nn { genealogy-profiles } {
 		#1~style				.tl_set:c		= { l__gpr_#1_style_tl } ,
 		#1~index				.tl_set:c		= { l__gpr_#1_index_tl } ,
@@ -123,6 +122,17 @@
 	\keys_define:nn { genealogy-profiles / profile } {
 		#1						.tl_set:c		= { l__gpr_#1_tl } ,
 	}
+
+	\tl_set:cn { l__gpr_#1_cmd_tl } { #2 }
+	\exp_args:Nc \NewDocumentCommand { #2 Style } { m } {
+		\gpr_name_part_style:nn { #1 } { ##1 }
+	}
+}
+\cs_generate_variant:Nn \gpr_create_style_keys:nn {
+	nV
+}
+
+\NewDocumentCommand { \gprCreateNamePart } { m o } {
 	\IfValueTF { #2 } {
 		\tl_set:Nn \l_tmpa_tl { #2 }
 	} {
@@ -132,10 +142,7 @@
 			\tl_put_right:Nn \l_tmpa_tl { \text_titlecase_first:n { ##1 } }
 		}
 	}
-	\tl_set:cV { l__gpr_#1_cmd_tl } \l_tmpa_tl
-	\exp_args:Nc \NewDocumentCommand { \l_tmpa_tl Style } { m } {
-		\gpr_name_part_style:nn { #1 } { ##1 }
-	}
+	\gpr_create_style_keys:nV { #1 } \l_tmpa_tl
 	\seq_new:c { l__gpr_#1_index_before_seq }
 	\seq_new:c { l__gpr_#1_index_after_seq }
 }
@@ -144,6 +151,7 @@
 \gprCreateNamePart { patronymic }
 \gprCreateNamePart { surname }
 \gprCreateNamePart { byname }
+\gpr_create_style_keys:nn { id } { gprID }
 
 % set some defaults
 \keys_set:nn { genealogy-profiles } {
@@ -503,7 +511,7 @@
 				\tl_put_right:Ne \l_tmpa_tl {
 					@
 					\seq_use:Nn \l_tmpb_seq {~}
-					\bool_if:NT \l__gpr_id_in_index_entries_bool { ~ (#2) }
+					\bool_if:NT \l__gpr_id_in_index_entries_bool { ~ (\gprIDStyle{#2}) }
 				}
 			}
 		} {
@@ -521,7 +529,7 @@
 					\seq_use:Nn \l_tmpa_seq {~}
 					,~ % TODO no comma for given?
 					\seq_use:Nn \l_tmpb_seq {~}
-					\bool_if:NT \l__gpr_id_in_index_entries_bool { ~ (#2) }
+					\bool_if:NT \l__gpr_id_in_index_entries_bool { ~ (\gprIDStyle{#2}) }
 				}
 			}
 		}
@@ -532,18 +540,15 @@
 
 \cs_new:Nn \gpr_add_to_indexes:nN
 {
-	\tl_set_eq:NN \l_tpma_tl \l__gpr_fullname_tl
-	\bool_if:NT \l__gpr_use_styles_in_index_bool {
-		\tl_put_right:Ne \l_tpma_tl
-			{
-				@ \l__gpr_styled_name_tl
-			}
-	}
-
 	\tl_if_blank:VF \l__gpr_id_index_tl {
 		\tl_if_novalue:nF {#1} {
 			\gpr_add_to_named_index:VeN \l__gpr_id_index_tl
-				{ #1 ~ \tl_use:N \l_tpma_tl }
+				{
+					#1 ~ \tl_use:N \l__gpr_fullname_tl
+					\bool_if:NT \l__gpr_use_styles_in_index_bool {
+						@ \gprIDStyle{#1} ~ \tl_use:N \l__gpr_styled_name_tl
+					}
+				}
 				#2
 		}
 	}
@@ -552,8 +557,12 @@
 		\gpr_add_to_named_index:VeN
 			\l__gpr_fullname_index_tl
 			{
-				\tl_use:N \l_tpma_tl
-				\bool_if:NT \l__gpr_id_in_index_entries_bool { ~ (\tl_use:N #1) }
+				\bool_if:NTF \l__gpr_use_styles_in_index_bool {
+					\tl_use:N \l__gpr_styled_name_tl
+				} {
+					\tl_use:N \l__gpr_fullname_tl
+				}
+				\bool_if:NT \l__gpr_id_in_index_entries_bool { ~ (\gprIDStyle{\tl_use:N #1}) }
 			}
 			#2
 	}
@@ -597,7 +606,7 @@
 	\group_end:
 }
 \cs_generate_variant:Nn \gpr_name_part_style:nn {
-	nv
+	nv, nV
 }
 
 \cs_new_protected:Nn \gpr_format_floruit:N
@@ -797,7 +806,11 @@
 
 		% placeholders for id and names
 		\cs_set:Npn \gprHeader { \tl_use:N \l__gpr_header_format_tl }
-		\cs_set:Npn \gprID { \tl_use:N \l__gpr_id_tl } % TODO + style
+		\gpr_create_profile_macro:nnn { gprID } {
+			\tl_use:N \l__gpr_id_tl
+		} {
+			\gpr_name_part_style:nV { id } \l__gpr_id_tl
+		}
 		\gpr_create_profile_macro:nnn { gprFullName } {
 			\tl_use:N \l__gpr_fullname_tl
 		} {
