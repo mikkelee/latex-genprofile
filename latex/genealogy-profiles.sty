@@ -64,7 +64,8 @@
 					\tl_clear:N \l__gpr_begin_life_events_tl
 					\tl_clear:N \l__gpr_end_life_events_tl
 				}
-				{2} { 
+				{2} {
+					\bool_set_false:N \l__gpr_auto_header_bool
 					\tl_set:Nn \l__gpr_begin_profile_tl {
 						\begin{tcolorbox}[title = \gprHeader]
 					}
