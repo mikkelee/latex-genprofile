@@ -687,11 +687,16 @@
 % genealogytree package integration
 % 
 
-\cs_new_protected:Nn \gpr_set_genealogytree_keys:n
+\cs_new_protected:Nn \gpr_set_gtr_keys:n
 {
-	\gtrset{ database/.cd, #1 }
+	\gtrset{ #1 }
 }
-\cs_generate_variant:Nn \gpr_set_genealogytree_keys:n {
+
+\cs_new_protected:Nn \gpr_set_gtr_database_keys:n
+{
+	\gpr_set_gtr_keys:n{ database/.cd, #1 }
+}
+\cs_generate_variant:Nn \gpr_set_gtr_database_keys:n {
 	V
 }
 
@@ -727,7 +732,7 @@
   \end{gtrprintlist}%
   \gtr@print@infolist%
 }
-\gtrset{database~format=gtr_db_format}
+\gpr_set_gtr_keys:n { database~format = gtr_db_format }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Environments
@@ -850,7 +855,7 @@
 		\tl_if_empty:NF \l__gpr_life_events_tl {
 			\tl_use:N \l__gpr_begin_life_events_tl
 
-			\gpr_set_genealogytree_keys:V \l__gpr_life_events_tl
+			\gpr_set_gtr_database_keys:V \l__gpr_life_events_tl
 			\gpr_print_gtr_database:
 
 			\tl_use:N \l__gpr_end_life_events_tl
