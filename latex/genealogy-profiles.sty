@@ -231,6 +231,10 @@
 { Use ~ of ~ unknown ~ name ~ part ~ "#1" ~ on ~ input ~ line ~ #2 }
 { Create ~ it ~ with ~ gprCreateNamePart ~ first. }
 
+\msg_new:nnn
+{ genealogy-profiles } { outside-profile }
+{ The ~ #1 ~ macro  ~ should ~ only ~ be ~ used ~ inside ~ profiles, ~ on ~ input ~ line ~ #2 }
+
 \cs_new_protected:Nn \gpr_warning:nn
 {
 	\msg_warning:nnee { genealogy-profiles } { #1 } { #2 } { \the\inputlineno }
@@ -965,7 +969,11 @@
 \cs_generate_variant:Nn \gpr_cmd_year:n {
 	e
 }
-\NewDocumentCommand { \gprYear } { s m } { % TODO disable outside profiles?
+\NewDocumentCommand { \gprYear } { s m } {
+	\tl_if_empty:NT \l__gpr_id_tl {
+		\gpr_error:nn { outside-profile } { gprYear }
+	}
+
 	\gpr_cmd_year:e {#2}
 	\bool_if:NF { #1 } { #2 }
 }
@@ -995,7 +1003,11 @@
 \cs_generate_variant:Nn \gpr_cmd_years:n {
 	e
 }
-\NewDocumentCommand { \gprYears } { s m } { % TODO disable outside profiles?
+\NewDocumentCommand { \gprYears } { s m } {
+	\tl_if_empty:NT \l__gpr_id_tl (
+		\gpr_error:nn { outside-profile } { gprYears }
+	)
+
 	\gpr_cmd_years:e {#2}
 	\bool_if:NF { #1 } { #2 }
 }
