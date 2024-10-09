@@ -254,9 +254,6 @@
 % Extensions to expl3 library
 % 
 
-\prg_generate_conditional_variant:Nnn \tl_if_blank:n
-	{ v, V } { F }
-
 \prg_generate_conditional_variant:Nnn \property_if_recorded:nn
 	{ en } { T, TF }
 
@@ -464,7 +461,7 @@
 {
 	\seq_clear:N #1
 	\seq_map_inline:Nn #2 {
-		\tl_if_blank:vF { l__gpr_##1_tl } {
+		\tl_if_empty:cF { l__gpr_##1_tl } {
 			\bool_if:NTF #3 {
 				\seq_put_right:Ne #1 {
 					\use:c
@@ -483,7 +480,7 @@
 
 
 \cs_new:Nn \gpr_build_index_entry:nnN {
-	\tl_if_blank:vF { l__gpr_#1_tl } {
+	\tl_if_empty:cF { l__gpr_#1_tl } {
 		% build before/after seqs if not defined
 		\seq_if_empty:cT { l__gpr_#1_index_before_seq } {
 			\tl_set:Nn \l_tmpa_tl { l__gpr_#1_index_after_seq }
@@ -591,7 +588,7 @@
 	\seq_clear_new:N \l__gpr_styled_name_seq
 
 	\seq_map_inline:Nn \g__gpr_name_part_order_seq {
-		\tl_if_blank:vF { l__gpr_##1_tl } {
+		\tl_if_empty:cF { l__gpr_##1_tl } {
 			\seq_put_right:Ne \l__gpr_styled_name_seq {
 				\use:c
 					{ \tl_use:c { l__gpr_##1_cmd_tl } Style }
@@ -768,7 +765,7 @@
 			% if no full name supplied, build one from given parts
 			\seq_clear:N \l_tmpa_seq
 			\seq_map_inline:Nn \g__gpr_name_part_order_seq {
-				\tl_if_blank:vF { l__gpr_##1_tl } {
+				\tl_if_empty:cF { l__gpr_##1_tl } {
 					\seq_put_right:Nv \l_tmpa_seq { l__gpr_##1_tl }
 				}
 			}
