@@ -50,6 +50,8 @@
 	end~header					.tl_set:N		= \l__gpr_end_header_tl ,
 	begin~life~events			.tl_set:N		= \l__gpr_begin_life_events_tl ,
 	end~life~events				.tl_set:N		= \l__gpr_end_life_events_tl ,
+	begin~content				.tl_set:N		= \l__gpr_begin_content_tl ,
+	end~content					.tl_set:N		= \l__gpr_end_content_tl ,
 
 	layout~preset				.choices:nn		= {
 			clear ,
@@ -63,6 +65,8 @@
 					\tl_clear:N \l__gpr_end_header_tl
 					\tl_clear:N \l__gpr_begin_life_events_tl
 					\tl_clear:N \l__gpr_end_life_events_tl
+					\tl_clear:N \l__gpr_begin_content_tl
+					\tl_clear:N \l__gpr_end_content_tl
 				}
 				{2} {
 					\bool_set_false:N \l__gpr_auto_header_bool
@@ -864,7 +868,13 @@
 
 			\tl_use:N \l__gpr_end_life_events_tl
 		}
+
+		% begin content
+		\tl_use:N \l__gpr_begin_content_tl
 }{
+		% end content
+		\tl_use:N \l__gpr_end_content_tl
+
 		% end typesetting
 		\tl_use:N \l__gpr_end_profile_tl
 
