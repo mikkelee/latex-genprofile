@@ -12,6 +12,7 @@
 \usepackage{imakeidx}
 \makeindex[name=gpr-id, title=ID-register, options=-s genprofile]
 \makeindex[name=gpr-fullname, title={Register på fuldt navn}, options=-s genprofile]
+\makeindex[name=gpr-given, title={Register på fornavn}, options=-s genprofile]
 \makeindex[name=gpr-patronymic, title={Patronymregister}, options=-s genprofile]
 \makeindex[name=gpr-surname, title={Efternavneregister}, options=-s genprofile]
 \makeindex[name=gpr-byname, title={Tilnavneregister}, options=-s genprofile]
@@ -25,6 +26,7 @@
 	layout preset = tcolorbox,
 	id index = gpr-id,
 	full name index = gpr-fullname,
+	given name index = gpr-given,
 	patronymic index = gpr-patronymic,
 	surname index = gpr-surname,
 	byname index = gpr-byname,
@@ -38,6 +40,8 @@
 }
 
 \begin{document}
+
+Test name formatting: (\gprName{_ _ Mozart})
 
 Reference outside profile: \gprRef{Jens Hansen Smed}
 
@@ -93,6 +97,8 @@ Test ref with unknown id: \gprRef[FOO]{Svend Poulsen}
 
 \end{gprProfile}
 
+% Should cause error: \gprYear{1820}
+
 \begin{gprProfile*}{given name=Jens, patronymic=Hansen, byname=Bødker}[birth={1805}{Sverige}]
 	Urelateret person.
 
@@ -141,6 +147,7 @@ Test ref with unknown id: \gprRef[FOO]{Svend Poulsen}
 
 \printindex[gpr-id]
 \printindex[gpr-fullname]
+\printindex[gpr-given]
 \printindex[gpr-patronymic]
 \printindex[gpr-surname]
 \printindex[gpr-byname]
