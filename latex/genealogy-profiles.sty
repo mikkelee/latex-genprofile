@@ -501,6 +501,7 @@
 			\seq_use:Nn \l_tmpa_seq {~}
 		}
 		\bool_if:NTF \l__gpr_nest_index_entries_bool {
+			% nested entries
 			\bool_if:NT \l__gpr_use_styles_in_index_bool {
 				\gpr_get_name_parts:NcN \l_tmpb_seq { l__gpr_#1_index_before_seq } \c_true_bool
 				\tl_put_right:Ne \l_tmpa_tl { @ \seq_use:Nn \l_tmpb_seq {~} }
@@ -521,9 +522,18 @@
 				}
 			}
 		} {
+			% un-nested entries
+
+			% we only use a comma if there is an after seq
+			\int_compare:nNnTF { \seq_count:c { l__gpr_#1_index_after_seq } } = { 0 } {
+				\tl_set:Nn \l_tmpb_tl {  }
+			} {
+				\tl_set:Nn \l_tmpb_tl { ,~ }
+			}
+
 			\gpr_get_name_parts:NcN \l_tmpb_seq { l__gpr_#1_index_after_seq } \c_false_bool
 			\tl_put_right:Ne \l_tmpa_tl {
-				,~ % TODO no comma for given?
+				\tl_use:N \l_tmpb_tl
 				\seq_use:Nn \l_tmpb_seq {~}
 				\bool_if:NT \l__gpr_id_in_index_entries_bool { ~ (#2) }
 			}
@@ -533,7 +543,7 @@
 				\tl_put_right:Ne \l_tmpa_tl {
 					@
 					\seq_use:Nn \l_tmpa_seq {~}
-					,~ % TODO no comma for given?
+					\tl_use:N \l_tmpb_tl
 					\seq_use:Nn \l_tmpb_seq {~}
 					\bool_if:NT \l__gpr_id_in_index_entries_bool { ~ (\gprIDStyle{#2}) }
 				}
